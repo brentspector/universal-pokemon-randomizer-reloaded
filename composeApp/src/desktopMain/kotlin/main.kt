@@ -1,9 +1,8 @@
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication, title = "universal-pokemon-randomizer-reloaded") {
+    Window(onCloseRequest = ::exitApplication, title = "Universal Pokemon Randomizer Reloaded") {
         App()
     }
 }
