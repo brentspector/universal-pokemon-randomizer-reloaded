@@ -14,7 +14,8 @@ import androidx.compose.ui.semantics.semantics
 @Composable
 fun PokemonTraits() {
 
-    var pokemonBaseStatsState by remember { mutableStateOf(true) }
+    var ptvm = PokemonTraitsViewModel()
+    var pokemonBaseStatsState by remember(ptvm.pokemonBaseStatsState)
 
     Row(Modifier.selectableGroup()) {
         Text("Pokemon Base Stats")
