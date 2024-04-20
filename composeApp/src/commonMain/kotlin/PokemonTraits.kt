@@ -3,10 +3,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -14,19 +11,18 @@ import androidx.compose.ui.semantics.semantics
 @Composable
 fun PokemonTraits() {
 
-    var ptvm = PokemonTraitsViewModel()
-    var pokemonBaseStatsState by remember(ptvm.pokemonBaseStatsState)
+    val pokemonBaseStatsState = remember { PokemonTraitsViewModel() }
 
     Row(Modifier.selectableGroup()) {
         Text("Pokemon Base Stats")
         RadioButton(
-            selected = pokemonBaseStatsState,
-            onClick = { pokemonBaseStatsState = true },
+            selected = pokemonBaseStatsState.pokemonBaseStatsState,
+            onClick = { pokemonBaseStatsState.pokemonBaseStatsState = true },
             modifier = Modifier.semantics { contentDescription = "Localized Description" }
         )
         RadioButton(
-            selected = !pokemonBaseStatsState,
-            onClick = { pokemonBaseStatsState = false },
+            selected = !pokemonBaseStatsState.pokemonBaseStatsState,
+            onClick = { pokemonBaseStatsState.pokemonBaseStatsState = false },
             modifier = Modifier.semantics { contentDescription = "Localized Description" }
         )
     }
