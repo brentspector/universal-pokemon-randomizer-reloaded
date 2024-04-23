@@ -1,3 +1,5 @@
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.RadioButton
@@ -11,34 +13,19 @@ import androidx.compose.ui.semantics.semantics
 @Composable
 fun PokemonTraits() {
 
-    val pokemonBaseStatsState = remember { PokemonTraitsViewModel() }
+    val pokemonTraitsState = remember { PokemonTraitsViewModel() }
 
-    Row(Modifier.selectableGroup()) {
+    Column(Modifier.selectableGroup()) {
         Text("Pokemon Base Stats")
-        RadioButton(
-            selected = pokemonBaseStatsState.pokemonBaseStatsState,
-            onClick = { pokemonBaseStatsState.pokemonBaseStatsState = true },
-            modifier = Modifier.semantics { contentDescription = "Localized Description" }
-        )
-        RadioButton(
-            selected = !pokemonBaseStatsState.pokemonBaseStatsState,
-            onClick = { pokemonBaseStatsState.pokemonBaseStatsState = false },
-            modifier = Modifier.semantics { contentDescription = "Localized Description" }
-        )
+        BaseStatisticsMod.entries.forEach { state ->
+            Row {
+                RadioButton(
+                    selected = pokemonTraitsState.baseStatisticsModState == state,
+                    onClick = { pokemonTraitsState.baseStatisticsModState = state },
+                    modifier = Modifier.semantics { contentDescription = state.toString() }
+                )
+                Text(state.toString())
+            }
+        }
     }
 }
-
-//        var showContent by remember { mutableStateOf(false) }
-//        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-//            Button(onClick = { showContent = !showContent }) {
-//                Text("Click me!")
-//            }
-//            AnimatedVisibility(showContent) {
-//                val greeting = remember { Greeting().greet() }
-//                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-// This is from compose-multiplatform.xml and Res.kt
-//                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-//                    Text("Compose: $greeting")
-//                }
-//            }
-//        }
