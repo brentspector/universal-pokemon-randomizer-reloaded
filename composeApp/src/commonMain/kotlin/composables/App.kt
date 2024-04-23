@@ -1,3 +1,5 @@
+package composables
+
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
