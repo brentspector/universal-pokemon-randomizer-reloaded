@@ -11,20 +11,18 @@ import androidx.compose.ui.semantics.semantics
 @Composable
 fun PokemonTraits() {
 
-    val pokemonBaseStatsState = remember { PokemonTraitsViewModel() }
+    val pokemonTraitsState = remember { PokemonTraitsViewModel() }
 
     Row(Modifier.selectableGroup()) {
         Text("Pokemon Base Stats")
-        RadioButton(
-            selected = pokemonBaseStatsState.pokemonBaseStatsState,
-            onClick = { pokemonBaseStatsState.pokemonBaseStatsState = true },
-            modifier = Modifier.semantics { contentDescription = "Localized Description" }
-        )
-        RadioButton(
-            selected = !pokemonBaseStatsState.pokemonBaseStatsState,
-            onClick = { pokemonBaseStatsState.pokemonBaseStatsState = false },
-            modifier = Modifier.semantics { contentDescription = "Localized Description" }
-        )
+        BaseStatisticsMod.entries.forEach { state ->
+                Text(state.toString())
+                RadioButton(
+                    selected = pokemonTraitsState.baseStatisticsModState == state,
+                    onClick = { pokemonTraitsState.baseStatisticsModState = state },
+                    modifier = Modifier.semantics { contentDescription = state.toString() }
+                )
+        }
     }
 }
 
