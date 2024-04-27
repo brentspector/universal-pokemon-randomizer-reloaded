@@ -9,9 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import romHandlers.RomHandler
-import romHandlers.Gen4RomHandler
-import romHandlers.Gen5RomHandler
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
@@ -28,10 +25,7 @@ fun App() {
 fun Settings() {
     Button(
         onClick = {
-            var romHandler: RomHandler = Gen4RomHandler()
-            println(romHandler.parseRom())
-            romHandler = Gen5RomHandler()
-            println(romHandler.parseRom())
+            getFile()
         },
         modifier = Modifier.padding(16.dp)
     ) {
