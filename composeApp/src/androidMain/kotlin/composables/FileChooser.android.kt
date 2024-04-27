@@ -7,7 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 
-class MyLifecycleObserver(private val registry : ActivityResultRegistry)
+class FileChooserLifecycleObserver(private val registry : ActivityResultRegistry)
     : DefaultLifecycleObserver {
     lateinit var getContent : ActivityResultLauncher<String>
 
@@ -20,7 +20,7 @@ class MyLifecycleObserver(private val registry : ActivityResultRegistry)
     }
 }
 
-lateinit var observer: MyLifecycleObserver
+lateinit var fileChooserObserver: FileChooserLifecycleObserver
 actual fun getFile() {
-    observer.getContent.launch("image/*")
+    fileChooserObserver.getContent.launch("image/*")
 }
