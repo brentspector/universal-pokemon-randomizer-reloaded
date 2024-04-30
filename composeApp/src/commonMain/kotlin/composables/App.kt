@@ -7,10 +7,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 @Preview
 fun App() {
@@ -30,6 +28,8 @@ fun Settings() {
         modifier = Modifier.padding(16.dp)
     ) {
         // Button text
-        Text("Is RomHack?")
+        Text("Button Thing")
     }
 }
+
+
