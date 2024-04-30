@@ -24,3 +24,7 @@ lateinit var fileChooserObserver: FileChooserLifecycleObserver
 actual fun getFile() {
     fileChooserObserver.getContent.launch("image/*")
 }
+
+actual fun saveFile() {
+    TODO("Not yet implemented")
+}
