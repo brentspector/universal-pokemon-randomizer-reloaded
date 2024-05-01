@@ -13,7 +13,7 @@ import composables.fileChooserObserver
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fileChooserObserver = FileChooserLifecycleObserver(activityResultRegistry)
+        fileChooserObserver = FileChooserLifecycleObserver(activityResultRegistry, contentResolver)
         lifecycle.addObserver(fileChooserObserver)
 
         setContent {
