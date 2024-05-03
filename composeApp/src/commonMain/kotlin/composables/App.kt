@@ -23,7 +23,7 @@ fun App() {
 fun Settings() {
     Button(
         onClick = {
-            getFile()
+            saveFile()
         },
         modifier = Modifier.padding(16.dp)
     ) {
