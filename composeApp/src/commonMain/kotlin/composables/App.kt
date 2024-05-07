@@ -1,6 +1,10 @@
 package composables
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -12,10 +16,20 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 @Preview
 fun App() {
+    val scrollState = rememberScrollState()
     MaterialTheme {
         // All components available can be found at https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary
-        PokemonTraits()
-        Settings()
+        Column(
+            Modifier.verticalScroll(scrollState)
+                .fillMaxWidth()
+        ) {
+            PokemonTraits()
+            PokemonTraits()
+            PokemonTraits()
+            PokemonTraits()
+            PokemonTraits()
+            Settings()
+        }
     }
 }
 
