@@ -16,11 +16,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 @Preview
 fun App() {
-    val scrollState = rememberScrollState()
     MaterialTheme {
         // All components available can be found at https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary
         Column(
-            Modifier.verticalScroll(scrollState)
+            Modifier.verticalScroll(rememberScrollState())
                 .fillMaxWidth()
         ) {
             PokemonTraits()
