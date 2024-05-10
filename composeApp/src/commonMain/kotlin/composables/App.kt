@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+
+
 @Composable
 @Preview
 fun App() {
@@ -36,12 +38,21 @@ fun App() {
 fun Settings() {
     Button(
         onClick = {
+
+        },
+        modifier = Modifier.padding(16.dp)
+    ) {
+        // Button text
+        Text("Load ROM")
+    }
+    Button(
+        onClick = {
             saveFile()
         },
         modifier = Modifier.padding(16.dp)
     ) {
         // Button text
-        Text("Button Thing")
+        Text("Save File")
     }
 }
 
