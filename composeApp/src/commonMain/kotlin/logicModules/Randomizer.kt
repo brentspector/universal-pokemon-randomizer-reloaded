@@ -3,12 +3,7 @@ package logicModules
 import romHandlers.RomHandler
 
 
-class Randomizer {
-    private lateinit var romHandler: RomHandler
-
-    fun Randomizer(romHandler: RomHandler) {
-        this.romHandler = romHandler
-    }
+class Randomizer(romHandler: RomHandler) {
 
     fun randomize(filename: String): Int {
         val seed: Long = RandomSource.pickSeed()
