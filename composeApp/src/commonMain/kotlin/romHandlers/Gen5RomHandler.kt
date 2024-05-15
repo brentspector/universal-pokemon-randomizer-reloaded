@@ -1,3 +1,4 @@
 package romHandlers
 
-class Gen5RomHandler : AbstractDSRomHandler()
+class Gen5RomHandler : AbstractDSRomHandler() {
+}
