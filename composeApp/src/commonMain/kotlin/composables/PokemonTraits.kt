@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import viewModels.RandomizerViewModel
 
 @Composable
 fun PokemonTraits() {
@@ -27,6 +26,5 @@ fun PokemonTraits() {
                 Text(state.toString())
             }
         }
-        Text(RandomizerViewModel.randomizer.toString())
     }
 }

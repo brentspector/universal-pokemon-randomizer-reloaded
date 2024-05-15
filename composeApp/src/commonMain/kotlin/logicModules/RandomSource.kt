@@ -1,6 +1,5 @@
 package logicModules
 
-import org.jetbrains.skiko.currentNanoTime
 import kotlin.random.Random
 
 object RandomSource {
@@ -9,7 +8,7 @@ object RandomSource {
     private var calls = 0
 
     fun reset() {
-        source = Random.Default
+        source = Random(pickSeed())
         calls = 0
     }
 
@@ -60,12 +59,7 @@ object RandomSource {
     }
 
     fun pickSeed(): Long {
-        var value: Long = 0
-        val by = currentNanoTime().toString().encodeToByteArray()
-        for (i in by.indices) {
-            value = value or (by[i].toLong() and 0xffL shl 8 * i)
-        }
-        return value
+        return Random.Default.nextLong()
     }
 
     fun callsSinceSeed(): Int {
