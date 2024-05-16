@@ -4,5 +4,5 @@ import romHandlers.RomHandler
 
 interface RomConfiguration {
     fun isLoadable() : Boolean
-    fun create() : RomHandler
+    fun create(rom: ByteArray): RomHandler
 }

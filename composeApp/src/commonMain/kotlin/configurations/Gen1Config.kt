@@ -8,7 +8,7 @@ open class RedVersionEnglish: RomConfiguration {
         return true
     }
 
-    override fun create(): RomHandler {
+    override fun create(rom: ByteArray): RomHandler {
         return Gen1RomHandler()
     }
 }
@@ -20,7 +20,7 @@ class YellowVersionEnglish : RomConfiguration {
         return true
     }
 
-    override fun create(): RomHandler {
+    override fun create(rom: ByteArray): RomHandler {
         return Gen1RomHandler()
     }
 }

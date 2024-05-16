@@ -47,7 +47,7 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
 
 lateinit var fileChooserObserver: FileChooserLifecycleObserver
 const val mimeType = "image/*"
-actual fun getFile() {
+actual fun getFile(byteArray: ByteArray) {
     fileChooserObserver.getContent.launch(mimeType)
 }
 

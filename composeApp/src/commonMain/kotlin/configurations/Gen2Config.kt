@@ -7,7 +7,7 @@ open class SilverVersionEnglish : RomConfiguration {
     override fun isLoadable(): Boolean {
         return true
     }
-    override fun create(): RomHandler {
+    override fun create(rom: ByteArray): RomHandler {
         return Gen2RomHandler()
     }
 }

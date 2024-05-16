@@ -6,7 +6,7 @@ import java.io.FileOutputStream
 import java.io.FilenameFilter
 import javax.swing.JFrame
 
-actual fun getFile() {
+actual fun getFile(byteArray: ByteArray) {
     val fileDialog = FileDialog(JFrame(), "Select ROM to load", FileDialog.LOAD)
     fileDialog.isVisible = true
     try {
