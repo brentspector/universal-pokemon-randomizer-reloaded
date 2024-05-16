@@ -23,7 +23,17 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
     }
 
     private fun processURI(uri: Uri?) {
-        println(uri)
+        try {
+            println(uri)
+            val byteArray = ByteArray(100000)
+            if (uri != null) {
+                contentResolver.openInputStream(uri)?.use { it.read(byteArray)
+                    println(byteArray.decodeToString())
+                }
+            }
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
     }
 
     private fun writeFile(contentResolver: ContentResolver, uri: Uri?) {
@@ -46,7 +56,7 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
 
 
 lateinit var fileChooserObserver: FileChooserLifecycleObserver
-const val mimeType = "image/*"
+const val mimeType = "text/*"
 actual fun getFile(byteArray: ByteArray) {
     fileChooserObserver.getContent.launch(mimeType)
 }

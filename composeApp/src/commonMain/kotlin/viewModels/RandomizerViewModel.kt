@@ -15,7 +15,6 @@ object RandomizerViewModel {
         readFile(rom)
     }
     fun generateRandomizer(targetConfig: String = "Default"): Randomizer {
-        println(romConfigurations.keys)
         val configFactory = romConfigurations[targetConfig]
             ?: throw Exception("No configuration for $targetConfig Found")
 
