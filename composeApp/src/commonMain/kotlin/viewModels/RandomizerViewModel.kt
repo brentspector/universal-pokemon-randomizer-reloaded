@@ -3,9 +3,7 @@ package viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import configurations.RedVersionEnglish
-import configurations.RomConfiguration
-import configurations.SilverVersionEnglish
+import configurations.romConfigurations
 import logicModules.Randomizer
 
 
@@ -13,16 +11,11 @@ object RandomizerViewModel {
     private var rom: ByteArray = ByteArray(0)
     var randomizer by mutableStateOf(generateRandomizer())
 
-    private val romConfigurations: Map<String, Lazy<RomConfiguration>> = mapOf(
-        "Default" to lazy { RedVersionEnglish() },
-        "Red" to lazy { RedVersionEnglish() },
-        "Silver" to lazy { SilverVersionEnglish() }
-    )
-
     fun loadROM(readFile: (ByteArray) -> Unit) {
         readFile(rom)
     }
     fun generateRandomizer(targetConfig: String = "Default"): Randomizer {
+        println(romConfigurations.keys)
         val configFactory = romConfigurations[targetConfig]
             ?: throw Exception("No configuration for $targetConfig Found")
 
@@ -35,3 +28,4 @@ object RandomizerViewModel {
         }
     }
 }
+
