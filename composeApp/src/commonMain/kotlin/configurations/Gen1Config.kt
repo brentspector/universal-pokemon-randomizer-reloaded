@@ -31,27 +31,31 @@ abstract class Gen1RomConfiguration: RomConfiguration {
             }
             val version = rom[VERSION_OFFSET].toInt() and 0xFF
             val nonjap = rom[JP_FLAG_OFFSET].toInt() and 0xFF
-            for (re in roms) {
-                if (romSig(
-                        rom,
-                        re.romName
-                    ) && re.version == version && re.nonJapanese == nonjap
-                ) {
-                    // No CRC provided in header for this RomConfiguration
-                    if (re.crcInHeader == -1) {
-                        return re
-                    }
-                    // CRC is provided and should match
-                    else {
-                        val crcInHeader = (rom[CRC_OFFSET].toInt() and 0xFF shl 8
-                                or (rom[CRC_OFFSET + 1].toInt() and 0xFF))
-                        if (re.crcInHeader == crcInHeader) {
-                            return re
-                        }
-                    }
+
+            val romConfigWithCrc = roms.asSequence()
+                .filter { it.crcInHeader != -1 }
+                .find {
+                    romSig(rom, it.romName) && it.version == version && it.nonJapanese == nonjap &&
+                            crcInHeaderCheck(it.crcInHeader, rom)
                 }
-            }
-            return null
+
+            val romConfigWithoutCrc = roms.asSequence()
+                .filter { it.crcInHeader == -1 }
+                .find { romSig(rom, it.romName) && it.version == version && it.nonJapanese == nonjap }
+
+            // Returns first non-null value, or null if both are null
+            return romConfigWithCrc ?: romConfigWithoutCrc
+        }
+
+        /**
+         * Checks if the CRC value extracted from the ROM header matches the CRC value stored in the ROM configuration.
+         *
+         * @param romConfigCRC The CRC value extracted from the ROM configuration.
+         * @param rom The byte array representing the ROM.
+         * @return `true` if the CRC value extracted from the ROM configuration matches the CRC value stored in the ROM header, `false` otherwise.
+         */
+        private fun crcInHeaderCheck(romConfigCRC: Int, rom: ByteArray): Boolean {
+            return romConfigCRC == (rom[CRC_OFFSET].toInt() and 0xFF shl 8 or (rom[CRC_OFFSET + 1].toInt() and 0xFF))
         }
 
         private fun romSig(rom: ByteArray, sig: String): Boolean {
@@ -63,6 +67,8 @@ abstract class Gen1RomConfiguration: RomConfiguration {
             }
             return true
         }
+
+
     }
 }
 open class RedVersionEnglish: Gen1RomConfiguration() {

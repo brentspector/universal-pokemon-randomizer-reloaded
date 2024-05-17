@@ -30,7 +30,6 @@ object RandomizerViewModel {
 
     fun autoGenerateRandomizer(): Randomizer {
         val config = autodetectRom(rom)
-        println(config)
         return Randomizer(config.create(rom))
     }
 }
