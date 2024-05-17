@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import viewModels.RandomizerViewModel
 import viewModels.RandomizerViewModel.loadROM
 import java.io.FileOutputStream
 
@@ -26,7 +27,10 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
     private fun processURI(uri: Uri?) {
         try {
             if (uri != null) {
-                contentResolver.openInputStream(uri)?.use { loadROM(it.readBytes()) }
+                contentResolver.openInputStream(uri)?.use {
+                    loadROM(it.readBytes())
+                    RandomizerViewModel.randomizer = RandomizerViewModel.autoGenerateRandomizer()
+                }
             }
         } catch (e: Throwable) {
             e.printStackTrace()
@@ -53,7 +57,7 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
 
 
 lateinit var fileChooserObserver: FileChooserLifecycleObserver
-const val mimeType = "text/*"
+const val mimeType = "application/octet-stream"
 actual fun getFile() {
     fileChooserObserver.getContent.launch(mimeType)
 }

@@ -10,6 +10,9 @@ abstract class Gen1RomConfiguration: RomConfiguration {
     abstract val romName: String
 
     companion object {
+        private const val MIN_ROM_SIZE = 0x80000
+        private const val MAX_ROM_SIZE = 0x200000
+
         private const val JP_FLAG_OFFSET = 0x14A
         private const val VERSION_OFFSET = 0x14C
         private const val CRC_OFFSET = 0x14E
@@ -22,38 +25,39 @@ abstract class Gen1RomConfiguration: RomConfiguration {
         }
 
         fun autoDetectGen1Rom(rom: ByteArray): RomConfiguration? {
+            if (rom.size < MIN_ROM_SIZE || rom.size > MAX_ROM_SIZE) {
+                println("Returning null")
+                return null
+            }
             val version = rom[VERSION_OFFSET].toInt() and 0xFF
             val nonjap = rom[JP_FLAG_OFFSET].toInt() and 0xFF
-            // Check for specific CRC first
-            val crcInHeader = (rom[CRC_OFFSET].toInt() and 0xFF shl 8
-                    or (rom[CRC_OFFSET + 1].toInt() and 0xFF))
             for (re in roms) {
                 if (romSig(
                         rom,
                         re.romName
-                    ) && re.version == version && re.nonJapanese == nonjap && re.crcInHeader == crcInHeader
+                    ) && re.version == version && re.nonJapanese == nonjap
                 ) {
-                    return re
-                }
-            }
-            // Now check for non-specific-CRC entries
-            for (re in roms) {
-                if (romSig(
-                        rom,
-                        re.romName
-                    ) && re.version == version && re.nonJapanese == nonjap && re.crcInHeader == -1
-                ) {
-                    return re
+                    // No CRC provided in header for this RomConfiguration
+                    if (re.crcInHeader == -1) {
+                        return re
+                    }
+                    // CRC is provided and should match
+                    else {
+                        val crcInHeader = (rom[CRC_OFFSET].toInt() and 0xFF shl 8
+                                or (rom[CRC_OFFSET + 1].toInt() and 0xFF))
+                        if (re.crcInHeader == crcInHeader) {
+                            return re
+                        }
+                    }
                 }
             }
             return null
         }
 
         private fun romSig(rom: ByteArray, sig: String): Boolean {
-            val sigOffset: Int = ROM_SIG_OFFSET
             val sigBytes: ByteArray = sig.encodeToByteArray() //sig.getBytes("US-ASCII")
             for (i in sigBytes.indices) {
-                if (rom[sigOffset + i] != sigBytes[i]) {
+                if (rom[ROM_SIG_OFFSET + i] != sigBytes[i]) {
                     return false
                 }
             }
@@ -62,14 +66,10 @@ abstract class Gen1RomConfiguration: RomConfiguration {
     }
 }
 open class RedVersionEnglish: Gen1RomConfiguration() {
-    override val crcInHeader: Int
-        get() = TODO("Not yet implemented")
-    override val nonJapanese: Int
-        get() = TODO("Not yet implemented")
-    override val version: Int
-        get() = TODO("Not yet implemented")
-    override val romName: String
-        get() = TODO("Not yet implemented")
+    override val crcInHeader: Int = -1
+    override val nonJapanese: Int = 1
+    override val version: Int = 0
+    override val romName: String = "POKEMON RED"
 
     override fun isLoadable(): Boolean {
         return true
@@ -80,17 +80,12 @@ open class RedVersionEnglish: Gen1RomConfiguration() {
     }
 }
 
-class BlueVersionEnglish : RedVersionEnglish()
+class BlueVersionEnglish : RedVersionEnglish() {
+    override val romName: String = "POKEMON BLUE"
+}
 
-class YellowVersionEnglish : Gen1RomConfiguration() {
-    override val crcInHeader: Int
-        get() = TODO("Not yet implemented")
-    override val nonJapanese: Int
-        get() = TODO("Not yet implemented")
-    override val version: Int
-        get() = TODO("Not yet implemented")
-    override val romName: String
-        get() = TODO("Not yet implemented")
+class YellowVersionEnglish : RedVersionEnglish() {
+    override val romName: String = "POKEMON YELLOW"
 
     override fun isLoadable(): Boolean {
         return true

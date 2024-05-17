@@ -13,7 +13,6 @@ fun Settings() {
     Button(
         onClick = {
             getFile()
-            RandomizerViewModel.randomizer = RandomizerViewModel.generateRandomizer("Red")
         },
         modifier = Modifier.padding(16.dp)
     ) {

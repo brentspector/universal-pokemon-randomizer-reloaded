@@ -3,6 +3,7 @@ package viewModels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import configurations.autodetectRom
 import configurations.romConfigurations
 import logicModules.Randomizer
 
@@ -25,6 +26,12 @@ object RandomizerViewModel {
         } else {
             throw Exception("ROMHandler for $targetConfig is not loadable.")
         }
+    }
+
+    fun autoGenerateRandomizer(): Randomizer {
+        val config = autodetectRom(rom)
+        println(config)
+        return Randomizer(config.create(rom))
     }
 }
 
