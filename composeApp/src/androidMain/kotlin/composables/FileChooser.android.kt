@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import viewModels.RandomizerViewModel.loadROM
 import java.io.FileOutputStream
 
 class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry, private val contentResolver: ContentResolver)
@@ -24,12 +25,8 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
 
     private fun processURI(uri: Uri?) {
         try {
-            println(uri)
-            val byteArray = ByteArray(100000)
             if (uri != null) {
-                contentResolver.openInputStream(uri)?.use { it.read(byteArray)
-                    println(byteArray.decodeToString())
-                }
+                contentResolver.openInputStream(uri)?.use { loadROM(it.readBytes()) }
             }
         } catch (e: Throwable) {
             e.printStackTrace()
@@ -57,7 +54,7 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
 
 lateinit var fileChooserObserver: FileChooserLifecycleObserver
 const val mimeType = "text/*"
-actual fun getFile(byteArray: ByteArray) {
+actual fun getFile() {
     fileChooserObserver.getContent.launch(mimeType)
 }
 

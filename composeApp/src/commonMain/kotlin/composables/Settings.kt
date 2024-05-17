@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 fun Settings() {
     Button(
         onClick = {
-            RandomizerViewModel.loadROM(::getFile)
+            getFile()
             RandomizerViewModel.randomizer = RandomizerViewModel.generateRandomizer("Red")
         },
         modifier = Modifier.padding(16.dp)

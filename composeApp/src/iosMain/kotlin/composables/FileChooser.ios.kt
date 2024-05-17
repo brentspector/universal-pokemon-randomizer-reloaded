@@ -1,6 +1,6 @@
 package composables
 
-actual fun getFile(byteArray: ByteArray) {
+actual fun getFile() {
     TODO("Not yet implemented")
 }
 

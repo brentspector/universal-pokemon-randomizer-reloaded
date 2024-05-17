@@ -11,8 +11,8 @@ object RandomizerViewModel {
     private var rom: ByteArray = ByteArray(0)
     var randomizer by mutableStateOf(generateRandomizer())
 
-    fun loadROM(readFile: (ByteArray) -> Unit) {
-        readFile(rom)
+    fun loadROM(readBytes: ByteArray) {
+        println(readBytes.decodeToString())
     }
     fun generateRandomizer(targetConfig: String = "Default"): Randomizer {
         val configFactory = romConfigurations[targetConfig]
