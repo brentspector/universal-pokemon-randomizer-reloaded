@@ -12,7 +12,7 @@ object RandomizerViewModel {
     var randomizer by mutableStateOf(generateRandomizer())
 
     fun loadROM(readBytes: ByteArray) {
-        println(readBytes.decodeToString())
+        rom = readBytes
     }
     fun generateRandomizer(targetConfig: String = "Default"): Randomizer {
         val configFactory = romConfigurations[targetConfig]
