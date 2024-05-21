@@ -33,4 +33,3 @@ object RandomizerViewModel {
         return Randomizer(config.create(rom))
     }
 }
-

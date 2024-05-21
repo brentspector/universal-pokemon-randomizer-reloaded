@@ -8,8 +8,8 @@ interface RomConfiguration {
 }
 
 val romConfigurations: Map<String, Lazy<RomConfiguration>> = mapOf(
-    "Default" to lazy { RedVersionEnglish() },
-    "Red" to lazy { RedVersionEnglish() },
+    "Default" to lazy { RedVersionUSA() },
+    "Red" to lazy { RedVersionUSA() },
     "Silver" to lazy { SilverVersionEnglish() }
 )
 
