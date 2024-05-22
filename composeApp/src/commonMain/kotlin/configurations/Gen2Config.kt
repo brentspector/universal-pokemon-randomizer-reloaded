@@ -4,7 +4,7 @@ import romHandlers.Gen2RomHandler
 import romHandlers.RomHandler
 
 open class SilverVersionEnglish : RomConfiguration {
-    override fun isLoadable(): Boolean {
+    override fun isLoadable(rom: ByteArray): Boolean {
         return true
     }
     override fun create(rom: ByteArray): RomHandler {

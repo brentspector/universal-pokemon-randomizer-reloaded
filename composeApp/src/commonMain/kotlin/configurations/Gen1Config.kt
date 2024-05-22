@@ -63,12 +63,12 @@ abstract class Gen1RomConfiguration: RomConfiguration {
 
     companion object {
         // Constants for shared Gen 1 ROM attributes
-        private const val MIN_ROM_SIZE = 0x80000
-        private const val MAX_ROM_SIZE = 0x200000
-        private const val JP_FLAG_OFFSET = 0x14A
-        private const val VERSION_OFFSET = 0x14C
-        private const val CRC_OFFSET = 0x14E
-        private const val ROM_SIG_OFFSET = 0x134
+        const val MIN_ROM_SIZE = 0x80000
+        const val MAX_ROM_SIZE = 0x200000
+        const val JP_FLAG_OFFSET = 0x14A
+        const val VERSION_OFFSET = 0x14C
+        const val CRC_OFFSET = 0x14E
+        const val ROM_SIG_OFFSET = 0x134
 
         // List of ROM configurations for loops
         private val roms = mutableListOf<Gen1RomConfiguration>().apply {
@@ -103,25 +103,17 @@ abstract class Gen1RomConfiguration: RomConfiguration {
         fun autoDetectGen1Rom(rom: ByteArray): RomConfiguration? {
             // Check ROM size validity
             if (rom.size < MIN_ROM_SIZE || rom.size > MAX_ROM_SIZE) {
-                println("Returning null")
                 return null
             }
-
-            // Get the version and japanese flags from ROM
-            val version = rom[VERSION_OFFSET].toInt() and 0xFF
-            val nonjap = rom[JP_FLAG_OFFSET].toInt() and 0xFF
 
             // Find ROM configuration with CRC and without CRC
             val romConfigWithCrc = roms.asSequence()
                 .filter { it.crcInHeader != -1 }
-                .find {
-                    romSig(rom, it.romName) && it.version == version && it.nonJapanese == nonjap &&
-                            crcInHeaderCheck(it.crcInHeader, rom)
-                }
+                .find { it.isLoadable(rom) }
 
             val romConfigWithoutCrc = roms.asSequence()
                 .filter { it.crcInHeader == -1 }
-                .find { romSig(rom, it.romName) && it.version == version && it.nonJapanese == nonjap }
+                .find { it.isLoadable(rom) }
 
             // Returns first non-null value, or null if both are null
             return romConfigWithCrc ?: romConfigWithoutCrc
@@ -134,7 +126,7 @@ abstract class Gen1RomConfiguration: RomConfiguration {
          * @param rom The byte array representing the ROM.
          * @return `true` if the CRC value extracted from the ROM header matches the CRC value stored in the ROM configuration, `false` otherwise.
          */
-        private fun crcInHeaderCheck(romConfigCRC: Int, rom: ByteArray): Boolean {
+        fun crcInHeaderCheck(romConfigCRC: Int, rom: ByteArray): Boolean {
             return romConfigCRC == (rom[CRC_OFFSET].toInt() and 0xFF shl 8 or (rom[CRC_OFFSET + 1].toInt() and 0xFF))
         }
 
@@ -145,7 +137,7 @@ abstract class Gen1RomConfiguration: RomConfiguration {
          * @param sig The ROM signature to compare against.
          * @return `true` if the ROM signature matches the specified signature, `false` otherwise.
          */
-        private fun romSig(rom: ByteArray, sig: String): Boolean {
+        fun romSig(rom: ByteArray, sig: String): Boolean {
             val sigBytes: ByteArray = sig.encodeToByteArray() //sig.getBytes("US-ASCII")
             for (i in sigBytes.indices) {
                 if (rom[ROM_SIG_OFFSET + i] != sigBytes[i]) {
@@ -154,6 +146,40 @@ abstract class Gen1RomConfiguration: RomConfiguration {
             }
             return true
         }
+    } // end companion object
+
+    /**
+     * Checks if the ROM is loadable.
+     *
+     * @return `true` if the ROM is loadable, `false` otherwise.
+     */
+    override fun isLoadable(rom: ByteArray): Boolean {
+        // Check ROM size validity
+        if (rom.size < MIN_ROM_SIZE || rom.size > MAX_ROM_SIZE) {
+            return false
+        }
+
+        // Get the version and japanese flags from ROM
+        val romVersion = rom[VERSION_OFFSET].toInt() and 0xFF
+        val nonjap = rom[JP_FLAG_OFFSET].toInt() and 0xFF
+
+        return if (crcInHeader != -1) {
+            romSig(rom, romName) && version == romVersion && nonJapanese == nonjap &&
+                    crcInHeaderCheck(crcInHeader, rom)
+        } else {
+            romSig(rom, romName) && version == romVersion && nonJapanese == nonjap
+        }
+    }
+
+    /**
+     * Creates a ROM handler for Gen 1 ROMs using the configuration
+     * of the invoked class.
+     *
+     * @param rom The byte array representing the ROM.
+     * @return A ROM handler for Gen 1 ROMs.
+     */
+    override fun create(rom: ByteArray): RomHandler {
+        return Gen1RomHandler()
     }
 }
 
@@ -169,26 +195,6 @@ open class RedVersionUSA: Gen1RomConfiguration() {
     override val nonJapanese: Int = 1
     override val version: Int = 0
     override val romName: String = "POKEMON RED"
-
-    /**
-     * Checks if the ROM is loadable.
-     *
-     * @return `true` if the ROM is loadable, `false` otherwise.
-     */
-    override fun isLoadable(): Boolean {
-        return true
-    }
-
-    /**
-     * Creates a ROM handler for Gen 1 ROMs using the configuration
-     * of the invoked class.
-     *
-     * @param rom The byte array representing the ROM.
-     * @return A ROM handler for Gen 1 ROMs.
-     */
-    override fun create(rom: ByteArray): RomHandler {
-        return Gen1RomHandler()
-    }
 }
 
 /**

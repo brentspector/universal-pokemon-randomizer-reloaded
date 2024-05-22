@@ -21,7 +21,7 @@ object RandomizerViewModel {
 
         val config = configFactory.value
 
-        if (config.isLoadable()) {
+        if (targetConfig == "Default" || config.isLoadable(rom)) {
             return Randomizer(config.create(rom))
         } else {
             throw Exception("ROMHandler for $targetConfig is not loadable.")

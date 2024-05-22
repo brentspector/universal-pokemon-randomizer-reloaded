@@ -3,7 +3,7 @@ package configurations
 import romHandlers.RomHandler
 
 interface RomConfiguration {
-    fun isLoadable() : Boolean
+    fun isLoadable(rom: ByteArray): Boolean
     fun create(rom: ByteArray): RomHandler
 }
 
