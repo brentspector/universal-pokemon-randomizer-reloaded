@@ -19,10 +19,7 @@ fun App() {
             Modifier.verticalScroll(rememberScrollState())
                 .fillMaxWidth()
         ) {
-            PokemonTraits()
-            PokemonTraits()
-            PokemonTraits()
-            PokemonTraits()
+            StarterPokemon()
             PokemonTraits()
             Settings()
         }
