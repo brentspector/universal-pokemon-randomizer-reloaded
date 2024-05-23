@@ -106,17 +106,10 @@ abstract class Gen1RomConfiguration: RomConfiguration {
                 return null
             }
 
-            // Find ROM configuration with CRC and without CRC
-            val romConfigWithCrc = roms.asSequence()
-                .filter { it.crcInHeader != -1 }
-                .find { it.isLoadable(rom) }
-
-            val romConfigWithoutCrc = roms.asSequence()
-                .filter { it.crcInHeader == -1 }
-                .find { it.isLoadable(rom) }
-
-            // Returns first non-null value, or null if both are null
-            return romConfigWithCrc ?: romConfigWithoutCrc
+            // Find ROM configuration with a matching CRC
+            return roms.find { it.crcInHeader != -1 && it.isLoadable(rom) }
+            // If no match is found, find ROM configuration without CRC, or null if no match found
+                ?: return roms.find { it.crcInHeader == -1 && it.isLoadable(rom) }
         }
 
         /**

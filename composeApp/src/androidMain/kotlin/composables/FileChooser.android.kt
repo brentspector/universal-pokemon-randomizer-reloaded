@@ -8,7 +8,6 @@ import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import viewModels.RandomizerViewModel
 import viewModels.RandomizerViewModel.loadROM
 import java.io.FileOutputStream
 
@@ -29,7 +28,6 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
             if (uri != null) {
                 contentResolver.openInputStream(uri)?.use {
                     loadROM(it.readBytes())
-                    RandomizerViewModel.randomizer = RandomizerViewModel.autoGenerateRandomizer()
                 }
             }
         } catch (e: Throwable) {
