@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 fun Settings() {
     Button(
         onClick = {
-            RandomizerViewModel.randomizer.randomize("Bob")
+            getFile()
         },
         modifier = Modifier.padding(16.dp)
     ) {
@@ -22,6 +22,7 @@ fun Settings() {
     Button(
         onClick = {
             saveFile()
+            RandomizerViewModel.randomizer.randomize("Bob")
         },
         modifier = Modifier.padding(16.dp)
     ) {
