@@ -1,12 +1,10 @@
 package romHandlers
 
+import pokemon.Pokemon
+
 // AbstractRomHandler.kt
 abstract class AbstractRomHandler : RomHandler {
-    override fun parseRom() {
-        println("Parsing ROM")
-    }
-
-    override fun manipulateRom() {
-        println("Manipulating ROM")
+    override fun randomPokemon(): Pokemon {
+        return Pokemon("")
     }
 }

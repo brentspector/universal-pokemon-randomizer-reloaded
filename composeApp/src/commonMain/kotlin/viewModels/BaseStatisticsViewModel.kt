@@ -8,15 +8,19 @@ enum class BaseStatisticsMod {
 }
 object BaseStatisticsViewModel: ModViewModel<BaseStatisticsMod> {
     private var baseStatisticsModState by mutableStateOf(BaseStatisticsMod.UNCHANGED)
+    override fun getState(): BaseStatisticsMod {
+        return baseStatisticsModState
+    }
+
+    override fun setState(state: BaseStatisticsMod) {
+        baseStatisticsModState = state
+    }
+
     override fun getEnumValues(): Iterable<BaseStatisticsMod> {
         return BaseStatisticsMod.entries
     }
 
     override fun isSelected(state: BaseStatisticsMod): Boolean {
         return baseStatisticsModState == state
-    }
-
-    override fun setState(state: BaseStatisticsMod) {
-        baseStatisticsModState = state
     }
 }

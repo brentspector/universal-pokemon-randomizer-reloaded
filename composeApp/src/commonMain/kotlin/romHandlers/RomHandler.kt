@@ -1,6 +1,9 @@
 package romHandlers
 
+import pokemon.Pokemon
+
 interface RomHandler {
-    fun parseRom()
-    fun manipulateRom()
+    fun randomPokemon(): Pokemon
+
+    fun randomizeStarters()
 }
