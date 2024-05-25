@@ -1,6 +1,8 @@
 package logicModules
 
 import romHandlers.RomHandler
+import viewModels.StarterPokemonMod
+import viewModels.StarterPokemonViewModel
 
 
 class Randomizer(private val romHandler: RomHandler) {
@@ -10,6 +12,12 @@ class Randomizer(private val romHandler: RomHandler) {
     }
 
     fun randomize(filename: String, seed: Long): Int {
+        RandomSource.seed(seed)
+        when (StarterPokemonViewModel.getState()) {
+            StarterPokemonMod.UNCHANGED -> {}
+            StarterPokemonMod.RANDOM -> { romHandler.randomizeStarters() }
+            StarterPokemonMod.CUSTOM -> { romHandler.setStarters(intArrayOf(0, 0, 0)) }
+        }
         return 0
     }
 

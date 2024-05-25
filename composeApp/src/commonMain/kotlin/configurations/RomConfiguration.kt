@@ -3,6 +3,31 @@ package configurations
 import romHandlers.RomHandler
 
 interface RomConfiguration {
+    /**
+     * CRC value stored in the ROM header.
+     */
+    val crcInHeader: Int
+
+    /**
+     * Bit flag indicating whether the ROM is non-Japanese.
+     */
+    val nonJapanese: Int
+
+    /**
+     * Version number of the ROM.
+     */
+    val version: Int
+
+    /**
+     * Name of the ROM.
+     */
+    val romName: String
+
+    /**
+     * Number of starters this game supports
+     */
+    val numStarters: Int
+
     fun isLoadable(rom: ByteArray): Boolean
     fun create(rom: ByteArray): RomHandler
 }

@@ -1,8 +1,5 @@
 package romHandlers
 
-// Gen4RomHandler.kt
-class Gen1RomHandler : AbstractGBCRomHandler() {
-    override fun parseRom() {
-        println("Gen4 Parsing")
-    }
+import configurations.Gen1RomConfiguration
+class Gen1RomHandler(romConfiguration: Gen1RomConfiguration) : AbstractGBCRomHandler(romConfiguration) {
 }
