@@ -5,5 +5,5 @@ import pokemon.Pokemon
 interface RomHandler {
     fun randomPokemon(): Pokemon
 
-    fun randomizeStarters(numStarters: Int)
+    fun randomizeStarters()
 }

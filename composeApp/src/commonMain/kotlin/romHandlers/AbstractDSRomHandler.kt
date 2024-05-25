@@ -1,4 +1,6 @@
 package romHandlers
 
+import configurations.RomConfiguration
+
 // AbstractDSRomHandler.kt
-abstract class AbstractDSRomHandler : AbstractRomHandler()
+abstract class AbstractDSRomHandler(romConfiguration: RomConfiguration) : AbstractRomHandler(romConfiguration)

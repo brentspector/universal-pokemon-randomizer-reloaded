@@ -41,26 +41,6 @@ import romHandlers.RomHandler
  * Abstract class to define the behavior of all Gen 1 ROMs. Exposes shared behaviors as companion objects
  */
 abstract class Gen1RomConfiguration: RomConfiguration {
-    /**
-     * CRC value stored in the ROM header.
-     */
-    abstract val crcInHeader: Int
-
-    /**
-     * Bit flag indicating whether the ROM is non-Japanese.
-     */
-    abstract val nonJapanese: Int
-
-    /**
-     * Version number of the ROM.
-     */
-    abstract val version: Int
-
-    /**
-     * Name of the ROM.
-     */
-    abstract val romName: String
-
     companion object {
         // Constants for shared Gen 1 ROM attributes
         const val MIN_ROM_SIZE = 0x80000
@@ -172,7 +152,7 @@ abstract class Gen1RomConfiguration: RomConfiguration {
      * @return A ROM handler for Gen 1 ROMs.
      */
     override fun create(rom: ByteArray): RomHandler {
-        return Gen1RomHandler()
+        return Gen1RomHandler(this)
     }
 }
 
@@ -188,6 +168,7 @@ open class RedVersionUSA: Gen1RomConfiguration() {
     override val nonJapanese: Int = 1
     override val version: Int = 0
     override val romName: String = "POKEMON RED"
+    override val numStarters: Int = 3
 }
 
 /**
@@ -278,6 +259,7 @@ class BlueVersionItaly : BlueVersionUSA() {
  */
 open class YellowVersionUSA : RedVersionUSA() {
     override val romName: String = "POKEMON YELLOW"
+    override val numStarters: Int = 2
 }
 
 /**

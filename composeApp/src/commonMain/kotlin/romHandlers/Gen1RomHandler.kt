@@ -1,6 +1,5 @@
 package romHandlers
 
-// Gen4RomHandler.kt
-class Gen1RomHandler : AbstractGBCRomHandler() {
-
+import configurations.Gen1RomConfiguration
+class Gen1RomHandler(romConfiguration: Gen1RomConfiguration) : AbstractGBCRomHandler(romConfiguration) {
 }

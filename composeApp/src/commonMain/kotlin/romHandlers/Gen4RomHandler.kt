@@ -1,6 +1,6 @@
 package romHandlers
 
-// Gen4RomHandler.kt
-class Gen4RomHandler : AbstractDSRomHandler() {
+import configurations.RomConfiguration
+class Gen4RomHandler(romConfiguration: RomConfiguration) : AbstractDSRomHandler(romConfiguration) {
 
 }
