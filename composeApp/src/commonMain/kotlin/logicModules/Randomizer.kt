@@ -16,7 +16,7 @@ class Randomizer(private val romHandler: RomHandler) {
         when (StarterPokemonViewModel.getState()) {
             StarterPokemonMod.UNCHANGED -> {}
             StarterPokemonMod.RANDOM -> { romHandler.randomizeStarters() }
-            StarterPokemonMod.CUSTOM -> { println("CUSTOM IS TODO") }
+            StarterPokemonMod.CUSTOM -> { romHandler.setStarters(intArrayOf(0, 0, 0)) }
         }
         return 0
     }
