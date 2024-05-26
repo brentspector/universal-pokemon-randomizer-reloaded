@@ -58,6 +58,10 @@ object RandomSource {
         return source.nextDouble()
     }
 
+    fun <T> shuffleList(list: MutableList<T>) {
+        list.shuffle(source)
+    }
+
     fun pickSeed(): Long {
         return Random.Default.nextLong()
     }
