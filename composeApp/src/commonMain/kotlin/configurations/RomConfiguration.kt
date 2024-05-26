@@ -1,6 +1,6 @@
 package configurations
 
-import romHandlers.RomHandler
+import romHandlers.abstractRomHandlers.AbstractRomHandler
 
 interface RomConfiguration {
     /**
@@ -29,7 +29,7 @@ interface RomConfiguration {
     val numStarters: Int
 
     fun isLoadable(rom: ByteArray): Boolean
-    fun create(rom: ByteArray): RomHandler
+    fun create(rom: ByteArray): AbstractRomHandler
 }
 
 val romConfigurations: Map<String, Lazy<RomConfiguration>> = mapOf(

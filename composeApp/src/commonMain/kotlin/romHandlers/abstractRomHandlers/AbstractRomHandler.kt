@@ -1,29 +1,31 @@
-package romHandlers
+package romHandlers.abstractRomHandlers
 
 import configurations.RomConfiguration
 import pokemon.Pokemon
 
-abstract class AbstractRomHandler(private val romConfiguration: RomConfiguration) : RomHandler {
+abstract class AbstractRomHandler(private val romConfiguration: RomConfiguration) {
     private val allPokes: MutableList<Pokemon> = mutableListOf(Pokemon("Default"))
     private val starterPokes: MutableList<Pokemon> = mutableListOf()
-    override fun getPokemon(): MutableList<Pokemon> {
+    fun getPokemon(): MutableList<Pokemon> {
         return allPokes
     }
 
-    override fun getPokemonByNumber(number: Int): Pokemon {
+    fun getPokemonByNumber(number: Int): Pokemon {
         return allPokes[number]
     }
-    override fun randomPokemon(): Pokemon {
+    fun randomPokemon(): Pokemon {
         return Pokemon("")
     }
 
-    override fun randomizeStarters() {
+    fun randomizeStarters() {
         repeat(romConfiguration.numStarters) {
             starterPokes.add(randomPokemon())
         }
     }
 
-    override fun setStarters(starters: IntArray) {
+    fun setStarters(starters: IntArray) {
         starterPokes.addAll(starters.take(romConfiguration.numStarters).map { getPokemonByNumber(it) })
     }
+
+    abstract fun saveROM(): Any
 }

@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import viewModels.RandomizerViewModel.loadROM
+import viewModels.RandomizerViewModel.saveROM
 import java.io.FileOutputStream
 
 class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry, private val contentResolver: ContentResolver)
@@ -37,18 +38,23 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
 
     private fun writeFile(contentResolver: ContentResolver, uri: Uri?) {
         try {
-            if (uri != null) {
-                contentResolver.openFileDescriptor(uri, "w")?.use { fileDescriptor ->
-                    FileOutputStream(fileDescriptor.fileDescriptor).use {
-                        it.write(
-                            ("Overwritten at ${System.currentTimeMillis()}\n")
-                                .toByteArray()
-                        )
-                    }
-                }
+            val rom : Any = saveROM()
+
+            if (rom is ByteArray) {
+                saveBytes(contentResolver, uri, rom)
             }
         } catch (e: Throwable) {
             e.printStackTrace()
+        }
+    }
+
+    private fun saveBytes(contentResolver: ContentResolver, uri: Uri?, rom: ByteArray) {
+        if (uri != null) {
+            contentResolver.openFileDescriptor(uri, "w")?.use { fileDescriptor ->
+                FileOutputStream(fileDescriptor.fileDescriptor).use {
+                    it.write(rom)
+                }
+            }
         }
     }
 }

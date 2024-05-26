@@ -1,7 +1,7 @@
 package configurations
 
 import romHandlers.Gen2RomHandler
-import romHandlers.RomHandler
+import romHandlers.abstractRomHandlers.AbstractRomHandler
 
 open class SilverVersionEnglish : RomConfiguration {
     override val crcInHeader: Int
@@ -17,8 +17,8 @@ open class SilverVersionEnglish : RomConfiguration {
     override fun isLoadable(rom: ByteArray): Boolean {
         return true
     }
-    override fun create(rom: ByteArray): RomHandler {
-        return Gen2RomHandler(this)
+    override fun create(rom: ByteArray): AbstractRomHandler {
+        return Gen2RomHandler(this, rom)
     }
 }
 

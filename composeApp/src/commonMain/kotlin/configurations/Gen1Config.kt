@@ -35,7 +35,7 @@
 package configurations
 
 import romHandlers.Gen1RomHandler
-import romHandlers.RomHandler
+import romHandlers.abstractRomHandlers.AbstractRomHandler
 
 /**
  * Abstract class to define the behavior of all Gen 1 ROMs. Exposes shared behaviors as companion objects
@@ -151,8 +151,8 @@ abstract class Gen1RomConfiguration: RomConfiguration {
      * @param rom The byte array representing the ROM.
      * @return A ROM handler for Gen 1 ROMs.
      */
-    override fun create(rom: ByteArray): RomHandler {
-        return Gen1RomHandler(this)
+    override fun create(rom: ByteArray): AbstractRomHandler {
+        return Gen1RomHandler(this, rom)
     }
 }
 

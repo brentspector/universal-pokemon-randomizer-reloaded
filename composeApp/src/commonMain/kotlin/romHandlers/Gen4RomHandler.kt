@@ -1,6 +1,12 @@
 package romHandlers
 
 import configurations.RomConfiguration
-class Gen4RomHandler(romConfiguration: RomConfiguration) : AbstractDSRomHandler(romConfiguration) {
+import romHandlers.abstractRomHandlers.AbstractDSRomHandler
 
+class Gen4RomHandler(romConfiguration: RomConfiguration)
+    : AbstractDSRomHandler(romConfiguration) {
+
+        override fun saveROM(): Any {
+            return ""
+        }
 }
