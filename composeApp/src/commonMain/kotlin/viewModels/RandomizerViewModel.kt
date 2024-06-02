@@ -68,10 +68,6 @@ object RandomizerViewModel {
         randomizer = generateRandomizer(autoDetect = true)
     }
 
-    fun saveROM(): Any {
-        return randomizer.saveROM()
-    }
-
     /**
      * Generates a randomizer instance based on the provided parameters.
      * @param targetConfig The name of the configuration to use. If null, attempts to

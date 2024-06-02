@@ -1,6 +1,7 @@
 package romHandlers.abstractRomHandlers
 
 import configurations.RomConfiguration
+import models.Rom
 import pokemon.Pokemon
 
 abstract class AbstractRomHandler(private val romConfiguration: RomConfiguration) {
@@ -27,5 +28,5 @@ abstract class AbstractRomHandler(private val romConfiguration: RomConfiguration
         starterPokes.addAll(starters.take(romConfiguration.numStarters).map { getPokemonByNumber(it) })
     }
 
-    abstract fun saveROM(): Any
+    abstract fun saveROM(): Rom
 }

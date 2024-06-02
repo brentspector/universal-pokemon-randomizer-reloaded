@@ -9,8 +9,11 @@ import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import viewModels.RandomizerViewModel.loadROM
-import viewModels.RandomizerViewModel.saveROM
+import viewModels.RandomizerViewModel.randomizer;
 import java.io.FileOutputStream
+import models.Rom
+import models.GBRom
+import models.NDSRom
 
 class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry, private val contentResolver: ContentResolver)
     : DefaultLifecycleObserver {
@@ -38,10 +41,15 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
 
     private fun writeFile(contentResolver: ContentResolver, uri: Uri?) {
         try {
-            val rom : Any = saveROM()
+            val rom: Rom = randomizer.saveROM()
 
-            if (rom is ByteArray) {
-                saveBytes(contentResolver, uri, rom)
+            if (rom is GBRom) {
+                var gbRom = rom as GBRom
+                saveBytes(contentResolver, uri, gbRom.value)
+            }
+
+            if (rom is NDSRom) {
+                var ndsRom = rom as NDSRom
             }
         } catch (e: Throwable) {
             e.printStackTrace()
