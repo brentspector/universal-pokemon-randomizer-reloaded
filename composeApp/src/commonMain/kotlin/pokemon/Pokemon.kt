@@ -9,30 +9,28 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 data class Pokemon(val name: String) {
-    // TODO: Identify better place for these constants
-    companion object {
-        private const val GENERAL_MEDIAN = 411.5
-        private const val GENERAL_SD = 108.5
-        private const val GENERAL_SKEW = -0.1
-        private const val EVO1_2EVOS_MEDIAN = 300.0
-        private const val EVO1_2EVOS_SD = 37.0
-        private const val EVO1_2EVOS_SKEW = -0.9
-        private const val PK_2EVOS_DIFF_MEDIAN = 100.0
-        private const val PK_2EVOS_DIFF_SD = 44.0
-        private const val PK_2EVOS_DIFF_SKEW = 0.7
-        private const val EVO1_1EVO_MEDIAN = 310.0
-        private const val EVO1_1EVO_SD = 44.0
-        private const val EVO1_1EVO_SKEW = -0.6
-        private const val PK_1EVO_DIFF_MEDIAN = 162.5
-        private const val PK_1EVO_DIFF_SD = 36.0
-        private const val PK_1EVO_DIFF_SKEW = 0.5
-        private const val NO_EVO_MEDIAN = 487.0
-        private const val NO_EVO_SD = 94.0
-        private const val NO_EVO_SKEW = -0.2
-        private const val MAX_EVO_MEDIAN = 490.0
-        private const val MAX_EVO_SD = 43.5
-        private const val MAX_EVO_SKEW = -0.3
-    }
+    private val GENERAL_MEDIAN = 411.5
+    private val GENERAL_SD = 108.5
+    private val GENERAL_SKEW = -0.1
+    private val EVO1_2EVOS_MEDIAN = 300.0
+    private val EVO1_2EVOS_SD = 37.0
+    private val EVO1_2EVOS_SKEW = -0.9
+    private val PK_2EVOS_DIFF_MEDIAN = 100.0
+    private val PK_2EVOS_DIFF_SD = 44.0
+    private val PK_2EVOS_DIFF_SKEW = 0.7
+    private val EVO1_1EVO_MEDIAN = 310.0
+    private val EVO1_1EVO_SD = 44.0
+    private val EVO1_1EVO_SKEW = -0.6
+    private val PK_1EVO_DIFF_MEDIAN = 162.5
+    private val PK_1EVO_DIFF_SD = 36.0
+    private val PK_1EVO_DIFF_SKEW = 0.5
+    private val NO_EVO_MEDIAN = 487.0
+    private val NO_EVO_SD = 94.0
+    private val NO_EVO_SKEW = -0.2
+    private val MAX_EVO_MEDIAN = 490.0
+    private val MAX_EVO_SD = 43.5
+    private val MAX_EVO_SKEW = -0.3
+
     val number: Int = 0
     // TODO: Make Type class
     // var primaryType: Type? = null, var secondaryType:Type? = null

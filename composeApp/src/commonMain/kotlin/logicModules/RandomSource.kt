@@ -62,6 +62,10 @@ object RandomSource {
         list.shuffle(source)
     }
 
+    fun <T> randomOfList(list: MutableList<T>): T {
+        return list.random(source)
+    }
+
     fun pickSeed(): Long {
         return Random.Default.nextLong()
     }
