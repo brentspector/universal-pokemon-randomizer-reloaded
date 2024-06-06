@@ -1,12 +1,10 @@
 package romHandlers
 
 import configurations.RomConfiguration
+import models.NDSFile
 import romHandlers.abstractRomHandlers.AbstractDSRomHandler
 
-class Gen5RomHandler(romConfiguration: RomConfiguration)
-    : AbstractDSRomHandler(romConfiguration) {
+class Gen5RomHandler(romConfiguration: RomConfiguration, rom: NDSFile)
+    : AbstractDSRomHandler(romConfiguration, rom) {
 
-        override fun saveROM(): Any {
-            return ""
-        }
 }

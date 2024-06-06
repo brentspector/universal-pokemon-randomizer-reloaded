@@ -1,5 +1,6 @@
 package logicModules
 
+import models.Rom
 import romHandlers.abstractRomHandlers.AbstractRomHandler
 import viewModels.StarterPokemonMod
 import viewModels.StarterPokemonViewModel
@@ -21,7 +22,7 @@ class Randomizer(private val romHandler: AbstractRomHandler) {
         return 0
     }
 
-    fun saveROM(): Any {
+    fun saveROM(): Rom {
         return romHandler.saveROM()
     }
 
