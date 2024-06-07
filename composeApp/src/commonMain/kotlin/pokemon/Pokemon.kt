@@ -8,7 +8,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-data class Pokemon(val name: String) {
+data class Pokemon(val name: String, var primaryType: Type) {
     private val GENERAL_MEDIAN = 411.5
     private val GENERAL_SD = 108.5
     private val GENERAL_SKEW = -0.1
@@ -32,8 +32,7 @@ data class Pokemon(val name: String) {
     private val MAX_EVO_SKEW = -0.3
 
     val number: Int = 0
-    // TODO: Make Type class
-    // var primaryType: Type? = null, var secondaryType:Type? = null
+    var secondaryType:Type? = null
 
     var hp: Int = 0
     var attack: Int = 0
@@ -43,10 +42,7 @@ data class Pokemon(val name: String) {
     var speed: Int = 0
     var special: Int = 0
 
-    // TODO: Change to an array
-    var ability1: Int = 0
-    var ability2: Int = 0
-    var ability3: Int = 0
+    var abilities: IntArray = IntArray(3)
 
     var catchRate: Int = 0
     var expYield: Int = 0
@@ -84,92 +80,109 @@ data class Pokemon(val name: String) {
     )
 
     // Select a type from the ones on this pokemon
-    // TODO: Make Type class
-//    fun randomOfTypes(random: java.util.Random): Type? {
-//        if (secondaryType == null) {
-//            return primaryType
-//        }
-//        return if (random.nextBoolean()) primaryType else secondaryType
-//    }
+    fun randomOfTypes(random: RandomSource): Type {
+        return if (random.nextBoolean()) primaryType else secondaryType ?: primaryType
+    }
 
-    // TODO: Make Type class, and replace Supplier with Kotlin equivalent
-//    fun assignTypeByReference(
-//        ref: Pokemon, typesDiffer: Int,
-//        defaultFunction: java.util.function.Supplier<Type?>
-//    ) {
-//        when (typesDiffer) {
-//            0 -> {
-//                primaryType = ref.primaryType
-//                this.secondaryType = ref.secondaryType
-//                typeChanged = ref.typeChanged
-//            }
-//
-//            1 -> {
-//                primaryType = if (ref.typeChanged == 1) defaultFunction.get() else primaryType
-//                this.secondaryType =
-//                    if (ref.typeChanged == 2) ref.secondaryType else this.secondaryType
-//                typeChanged = ref.typeChanged
-//                while (primaryType === this.secondaryType) {
-//                    primaryType = if (typeChanged == 1) defaultFunction.get() else primaryType
-//                    this.secondaryType =
-//                        if (typeChanged == 2) defaultFunction.get() else this.secondaryType
-//                }
-//            }
-//
-//            2 -> {
-//                primaryType =
-//                    if (ref.typeChanged == 1) ref.primaryType else if (this.secondaryType != null) primaryType else ref.secondaryType
-//                this.secondaryType =
-//                    if (ref.typeChanged == 2 && this.secondaryType != null) defaultFunction.get() else this.secondaryType
-//                typeChanged = if (this.secondaryType != null) ref.typeChanged else 1
-//                while (primaryType === this.secondaryType) {
-//                    primaryType = if (typeChanged == 1) defaultFunction.get() else primaryType
-//                    this.secondaryType =
-//                        if (typeChanged == 2) defaultFunction.get() else this.secondaryType
-//                }
-//            }
-//
-//            3 -> {
-//                primaryType = if (ref.typeChanged == 1) primaryType else defaultFunction.get()
-//                this.secondaryType =
-//                    if (ref.typeChanged == 1) ref.primaryType else this.secondaryType
-//                typeChanged = if (ref.typeChanged == 1) 2 else 1
-//                while (primaryType === this.secondaryType) {
-//                    primaryType = if (typeChanged == 1) defaultFunction.get() else primaryType
-//                    this.secondaryType =
-//                        if (typeChanged == 2) defaultFunction.get() else this.secondaryType
-//                }
-//            }
-//
-//            4 -> {
-//                primaryType =
-//                    if (ref.typeChanged == 2) ref.secondaryType else if (this.secondaryType != null) ref.secondaryType else ref.primaryType
-//                this.secondaryType =
-//                    if (ref.typeChanged == 1 && this.secondaryType != null) defaultFunction.get() else this.secondaryType
-//                typeChanged = if (ref.typeChanged == 1 && this.secondaryType != null) 2 else 1
-//                while (primaryType === this.secondaryType) {
-//                    primaryType = if (typeChanged == 1) defaultFunction.get() else primaryType
-//                    this.secondaryType =
-//                        if (typeChanged == 2) defaultFunction.get() else this.secondaryType
-//                }
-//            }
-//        }
-//    }
-    // TODO: Make Type class
-//    fun getRandomWeakness(random: java.util.Random?, useResistantType: Boolean): Type {
-//        return Type.randomWeakness(random, useResistantType, primaryType, this.secondaryType)
-//    }
-    // TODO: Make Type class
+    fun assignTypeByReference(
+        ref: Pokemon,
+        typesDiffer: Int,
+        defaultFunction: () -> Type
+    ) {
+        when (typesDiffer) {
+            // No difference, just copy the reference
+            0 -> {
+                primaryType = ref.primaryType
+                secondaryType = ref.secondaryType
+                typeChanged = ref.typeChanged
+            }
+            1 -> assignTypePrimaryTypesDiffer(ref, defaultFunction)
+            2 -> assignTypeSecondaryTypesDiffer(ref, defaultFunction)
+            3 -> assignTypePrimaryMatchesSecondary(ref, defaultFunction)
+            4 -> assignTypeSecondaryMatchesPrimary(ref, defaultFunction)
+        }
+    }
+
+    // Zubat (Poison/Flying) -> Butterfree (Bug/Flying)
+    private fun assignTypePrimaryTypesDiffer(ref: Pokemon, defaultFunction: () -> Type) {
+        // If the primary type changed, change the primary type of this one, otherwise keep the primary type
+        primaryType = if (ref.typeChanged == 1) defaultFunction() else primaryType
+        // If the secondary type changed, copy the secondary type, otherwise keep the secondary type
+        secondaryType = if (ref.typeChanged == 2) ref.secondaryType else secondaryType
+        typeChanged = ref.typeChanged
+        handlePrimarySecondaryEquality(defaultFunction)
+    }
+
+    // Paras (Bug/Grass) -> Butterfree (Bug/Flying)
+    private fun assignTypeSecondaryTypesDiffer(ref: Pokemon, defaultFunction: () -> Type) {
+        // If the primary type changed, copy the primary type, otherwise keep the primary type
+        primaryType = if (ref.typeChanged == 1) ref.primaryType else primaryType
+        // If the secondary type changed and this secondary type is not null,
+        // change the secondary type of this one, otherwise keep the secondary type
+        secondaryType = if (ref.typeChanged == 2 && secondaryType != null) defaultFunction() else secondaryType
+        // Copy the ref if possible, otherwise set type changed to 1 when this only has a primary type
+        typeChanged = if (secondaryType != null) ref.typeChanged else 1
+        handlePrimarySecondaryEquality(defaultFunction)
+    }
+
+    // Noibat (Flying/Dragon) -> Butterfree (Bug/Flying)
+    private fun assignTypePrimaryMatchesSecondary(ref: Pokemon, defaultFunction: () -> Type) {
+        // If the primary type changed, keep the primary type, otherwise change the primary type of this one
+        primaryType = if (ref.typeChanged == 1) primaryType else defaultFunction()
+        // If the secondary type changed, copy the primary type, otherwise keep the secondary type
+        secondaryType = if (ref.typeChanged == 1) ref.primaryType else secondaryType
+        // If the primary type changed, then this one's secondary type changed, otherwise the primary changed
+        typeChanged = if (ref.typeChanged == 1) 2 else 1
+        handlePrimarySecondaryEquality(defaultFunction)
+    }
+
+    // Anorith (Rock/Bug) -> Butterfree (Bug/Flying)
+    private fun assignTypeSecondaryMatchesPrimary(ref: Pokemon, defaultFunction: () -> Type) {
+        // If the secondary type changed, copy the secondary type, otherwise keep this primary type unless the secondary type
+        // is null, then copy the primary type to enable some level of change
+        primaryType = if (ref.typeChanged == 2) ref.secondaryType!! else if (secondaryType == null) ref.primaryType else primaryType
+        // If the primary type changed and our secondary type isn't null,
+        // change the secondary type of this one, otherwise keep the secondary type
+        secondaryType = if (ref.typeChanged == 1 && secondaryType != null) defaultFunction() else secondaryType
+        // If the primary type changed and our secondary type isn't null, then this one's secondary type changed,
+        // otherwise the primary changed
+        typeChanged = if (ref.typeChanged == 1 && secondaryType != null) 2 else 1
+        handlePrimarySecondaryEquality(defaultFunction)
+    }
+
+    private fun handlePrimarySecondaryEquality(defaultFunction: () -> Type) {
+        while (primaryType === secondaryType) {
+            primaryType = if (typeChanged == 1) defaultFunction() else primaryType
+            secondaryType = if (typeChanged == 2) defaultFunction() else secondaryType
+        }
+    }
+
+    fun getRandomWeakness(random: RandomSource, useResistantType: Boolean): Type? {
+        return Type.randomWeakness(random, useResistantType, primaryType, this.secondaryType)
+    }
+
     // TODO: Revisit and verify that dual types like Dark-Ghost correctly indicate no weaknesses
-//    fun isWeakTo(pkmn: Pokemon): Boolean {
-//        var isWeak = (Type.STRONG_AGAINST.get(primaryType).contains(pkmn.primaryType)
-//                || Type.STRONG_AGAINST.get(primaryType).contains(pkmn.secondaryType))
-//        if (this.secondaryType != null && !isWeak) {
-//            isWeak = (Type.STRONG_AGAINST.get(this.secondaryType).contains(pkmn.primaryType)
-//                    || Type.STRONG_AGAINST.get(this.secondaryType).contains(pkmn.secondaryType))
-//        }
-//        return isWeak
-//    }
+    fun isWeakTo(pk: Pokemon): Boolean {
+        val primaryImmunity = Type.IMMUNE_TO[pk.primaryType]?.run {
+            primaryType in this || secondaryType in this
+        } ?: false
+
+        val secondaryImmunity = Type.IMMUNE_TO[pk.secondaryType]?.run {
+            primaryType in this || secondaryType in this
+        } ?: false
+
+        val primaryWeakness = Type.STRONG_AGAINST[primaryType]?.run {
+            (pk.primaryType in this && !primaryImmunity) || (pk.secondaryType in this && !secondaryImmunity)
+        } ?: false
+
+        val secondaryWeakness = secondaryType?.let {
+            Type.STRONG_AGAINST[it]?.run {
+                (pk.primaryType in this && !primaryImmunity) || (pk.secondaryType in this && !secondaryImmunity)
+            }
+        } ?: false
+
+        return primaryWeakness || secondaryWeakness
+    }
     // TODO: Make Evolution class
 //    fun evolutionChainSize(): Int {
 //        var length = 0
