@@ -161,7 +161,6 @@ data class Pokemon(val name: String, var primaryType: Type) {
         return Type.randomWeakness(random, useResistantType, primaryType, this.secondaryType)
     }
 
-    // TODO: Revisit and verify that dual types like Dark-Ghost correctly indicate no weaknesses
     fun isWeakTo(pk: Pokemon): Boolean {
         val primaryImmunity = Type.IMMUNE_TO[pk.primaryType]?.run {
             primaryType in this || secondaryType in this
