@@ -59,10 +59,12 @@ object RandomSource {
     }
 
     fun <T> shuffleList(list: MutableList<T>) {
+        calls++
         list.shuffle(source)
     }
 
     fun <T> randomOfList(list: MutableList<T>): T {
+        calls++
         return list.random(source)
     }
 

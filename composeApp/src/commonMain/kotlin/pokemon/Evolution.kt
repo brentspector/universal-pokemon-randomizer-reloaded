@@ -24,9 +24,12 @@ data class Evolution(var from: Pokemon, var to: Pokemon, var carryStats: Int,
     }
 
     override fun hashCode(): Int {
-        var result = from.hashCode()
-        result = 31 * result + to.hashCode()
-        result = 31 * result + type.hashCode()
+        // Start with the from hashCode, or 17 if hashCode is 0 (17 enables healthy hash distribution)
+        var result = from.hashCode().takeIf { it != 0 } ?: 17
+        // 31 is a performant prime for hash distribution
+        val prime = 31
+        result = prime * result + to.hashCode()
+        result = prime * result + type.hashCode()
         return result
     }
 }

@@ -98,10 +98,6 @@ enum class EvolutionType(vararg val generations: Int) {
             }
         }
 
-        fun isInGeneration(generation: Int, et: EvolutionType): Boolean {
-            return et.generations[generation - 1] > UNUSED_METHOD
-        }
-
         fun fromIndex(generation: Int, index: Int): EvolutionType {
             return reverseIndexes[generation - 1]?.get(index) ?: NONE
         }
@@ -139,5 +135,9 @@ enum class EvolutionType(vararg val generations: Int) {
 
     fun usesLevel(): Boolean {
         return this === LEVEL || this === LEVEL_ATTACK_HIGHER || this === LEVEL_DEFENSE_HIGHER || this === LEVEL_ATK_DEF_SAME || this === LEVEL_LOW_PV || this === LEVEL_HIGH_PV || this === LEVEL_CREATE_EXTRA || this === LEVEL_IS_EXTRA || this === LEVEL_MALE_ONLY || this === LEVEL_FEMALE_ONLY
+    }
+
+    fun isInGeneration(generation: Int): Boolean {
+        return generations[generation - 1] > UNUSED_METHOD
     }
 }

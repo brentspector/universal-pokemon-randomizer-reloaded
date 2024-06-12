@@ -8,29 +8,13 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
+enum class StatBucket(val median: Double, val standardDeviation: Double, val skew: Double) {
+    GENERIC(median = 411.5, standardDeviation = 108.5, skew = -0.1),
+    LEGENDARY(median = 650.0, standardDeviation = 60.0, skew = 0.5),
+    HAS_EVOS(median = 300.0, standardDeviation = 37.0, skew = -0.9),
+    NO_EVOS(median = 487.0, standardDeviation = 94.0, skew = -0.2)
+}
 data class Pokemon(val name: String, var primaryType: Type) {
-    private val GENERAL_MEDIAN = 411.5
-    private val GENERAL_SD = 108.5
-    private val GENERAL_SKEW = -0.1
-    private val EVO1_2EVOS_MEDIAN = 300.0
-    private val EVO1_2EVOS_SD = 37.0
-    private val EVO1_2EVOS_SKEW = -0.9
-    private val PK_2EVOS_DIFF_MEDIAN = 100.0
-    private val PK_2EVOS_DIFF_SD = 44.0
-    private val PK_2EVOS_DIFF_SKEW = 0.7
-    private val EVO1_1EVO_MEDIAN = 310.0
-    private val EVO1_1EVO_SD = 44.0
-    private val EVO1_1EVO_SKEW = -0.6
-    private val PK_1EVO_DIFF_MEDIAN = 162.5
-    private val PK_1EVO_DIFF_SD = 36.0
-    private val PK_1EVO_DIFF_SKEW = 0.5
-    private val NO_EVO_MEDIAN = 487.0
-    private val NO_EVO_SD = 94.0
-    private val NO_EVO_SKEW = -0.2
-    private val MAX_EVO_MEDIAN = 490.0
-    private val MAX_EVO_SD = 43.5
-    private val MAX_EVO_SKEW = -0.3
-
     val number: Int = 0
     var secondaryType:Type? = null
 
@@ -60,9 +44,8 @@ data class Pokemon(val name: String, var primaryType: Type) {
     // TODO: Make ExpCurve class
     //var growthCurve: ExpCurve? = null
 
-    // TODO: Make Evolution class
-    //var evolutionsFrom: List<Evolution> = java.util.ArrayList<Evolution>()
-    //var evolutionsTo: List<Evolution> = java.util.ArrayList<Evolution>()
+    var evolutionsFrom: MutableList<Evolution> = mutableListOf()
+    var evolutionsTo: MutableList<Evolution> = mutableListOf()
 
     var shuffledStatsOrder: MutableList<Int> = mutableListOf(0, 1, 2, 3, 4, 5)
     var typeChanged: Int = 0
@@ -78,6 +61,38 @@ data class Pokemon(val name: String, var primaryType: Type) {
         482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 638, 639, 640, 641,
         642, 643, 644, 645, 646, 647, 648, 649
     )
+
+
+    // Allows recomputing isCyclic if the evolutionsFrom changes
+    private var _isCyclic: Boolean? = null
+    val isCyclic: Boolean
+        get() {
+            // Either get the calculated value, or compute, store, and return it
+            return _isCyclic ?: computeIsCyclic().also { _isCyclic = it }
+        }
+
+    fun forceRecomputeIsCyclic() {
+        _isCyclic = null
+    }
+
+    private fun computeIsCyclic(): Boolean {
+        val visited = mutableSetOf<Pokemon>()
+        val recStack = mutableSetOf<Pokemon>()
+
+        fun Pokemon.isCyclic(): Boolean {
+            if (!visited.add(this)) return true // If already visited, it's cyclic
+            recStack.add(this) // Add to recursion stack
+            for (ev in evolutionsFrom) {
+                if (recStack.contains(ev.to) || ev.to.isCyclic()) {
+                    return true // If the Pokemon is in recursion stack or found cyclic
+                }
+            }
+            recStack.remove(this) // Remove from recursion stack if no cycles found
+            return false
+        }
+
+        return isCyclic()
+    }
 
     // Select a type from the ones on this pokemon
     fun randomOfTypes(random: RandomSource): Type {
@@ -182,74 +197,41 @@ data class Pokemon(val name: String, var primaryType: Type) {
 
         return primaryWeakness || secondaryWeakness
     }
-    // TODO: Make Evolution class
-//    fun evolutionChainSize(): Int {
-//        var length = 0
-//        for (ev in evolutionsFrom) {
-//            val temp: Int = ev.to.evolutionChainSize()
-//            if (temp > length) {
-//                length = temp
-//            }
-//        }
-//        return length + 1
-//    }
-    // TODO: Make Evolution class
-//    fun isCyclic(visited: MutableSet<Pokemon?>, recStack: MutableSet<Pokemon?>): Boolean {
-//        if (!visited.contains(this)) {
-//            visited.add(this)
-//            recStack.add(this)
-//            for (ev in evolutionsFrom) {
-//                if (!visited.contains(ev.to) && ev.to.isCyclic(visited, recStack)) {
-//                    return true
-//                } else if (recStack.contains(ev.to)) {
-//                    return true
-//                }
-//            }
-//        }
-//        recStack.remove(this)
-//        return false
-//    }
-    // TODO: Make Evolution class
-//    fun minimumLevel(): Int {
-//        var min = 1
-//        for (evo in evolutionsTo) {
-//            var evoMin = 1
-//            evoMin = if (evo.type.usesLevel()) {
-//                evo.extraInfo
-//            } else {
-//                // TODO: Make this better (move MoveLearnt to Pokemon, etc.).
-//                when (evo.type) {
-//                    MeasureUnit.STONE, STONE_FEMALE_ONLY, STONE_MALE_ONLY -> 24
-//                    TRADE, TRADE_ITEM, TRADE_SPECIAL -> 37
-//                    else -> 33
-//                }
-//            }
-//            if (evoMin > min) {
-//                min = evoMin
-//            }
-//        }
-//        return min
-//    }
-    // TODO: Make Evolution class
-//    fun nearestEvoTarget(level: Int): Int {
-//        var target = -1
-//        var evoMin = -1
-//        for (i in evolutionsFrom.indices) {
-//            evoMin = if (evolutionsFrom[i].type.usesLevel()) {
-//                evolutionsFrom[i].extraInfo
-//            } else {
-//                when (evolutionsFrom[i].type) {
-//                    MeasureUnit.STONE, STONE_FEMALE_ONLY, STONE_MALE_ONLY -> 24
-//                    TRADE, TRADE_ITEM, TRADE_SPECIAL -> 37
-//                    else -> 33
-//                }
-//            }
-//
-//            // Target represents the evolution index
-//            target = if (evoMin <= level) i else target
-//        }
-//        return target
-//    }
+
+    fun evolutionChainSize(): Int {
+        return (evolutionsFrom.maxOfOrNull { it.to.evolutionChainSize() } ?: 0) + 1
+    }
+
+    fun minimumLevel(): Int {
+        return evolutionsTo.maxOfOrNull { evo ->
+            if (evo.type.usesLevel()) {
+                evo.extraInfo
+            } else {
+                // TODO: Make this support all EvolutionTypes (MoveLearnt at what level?)
+                when (evo.type) {
+                    EvolutionType.STONE, EvolutionType.STONE_FEMALE_ONLY, EvolutionType.STONE_MALE_ONLY -> 24
+                    EvolutionType.TRADE, EvolutionType.TRADE_ITEM, EvolutionType.TRADE_SPECIAL -> 37
+                    else -> 33
+                }
+            }
+        } ?: 1
+    }
+
+    fun nearestEvoTarget(level: Int): Int {
+        return evolutionsFrom.withIndex().lastOrNull { (index, evo) ->
+            val evoMin = if (evo.type.usesLevel()) {
+                evo.extraInfo
+            } else {
+                when (evo.type) {
+                    EvolutionType.STONE, EvolutionType.STONE_FEMALE_ONLY, EvolutionType.STONE_MALE_ONLY -> 24
+                    EvolutionType.TRADE, EvolutionType.TRADE_ITEM, EvolutionType.TRADE_SPECIAL -> 37
+                    else -> 33
+                }
+            }
+            evoMin <= level
+        }?.index ?: -1
+    }
+
 
     fun shuffleStats(random: RandomSource) {
         random.shuffleList(shuffledStatsOrder)
@@ -278,9 +260,13 @@ data class Pokemon(val name: String, var primaryType: Type) {
 
     fun randomizeStatsWithinBST(random: RandomSource) {
         // TODO: Fix so that it's based on anything with Wonder Guard
+        // Stat value being manually assigned
+        val reservedStats: Int = 50
+        // Number of stats reservedStats is being distributed to
+        val reservedTraits: Int = 5
         if (number == 292) {
             // Shedinja is horribly broken unless we restrict him to 1HP.
-            val bst = bst() - 51
+            val bst = bst() - reservedStats - 1
 
             // Make weightings
             val atkW = random.nextDouble()
@@ -290,17 +276,16 @@ data class Pokemon(val name: String, var primaryType: Type) {
             val speW = random.nextDouble()
             val totW = atkW + defW + spaW + spdW + speW
             hp = 1
-            attack = max(1.0, (atkW / totW * bst)).toInt() + 10
-            defense = max(1.0, (defW / totW * bst)).toInt() + 10
-            spatk = max(1.0, (spaW / totW * bst)).toInt() + 10
-            spdef = max(1.0, (spdW / totW * bst)).toInt() + 10
-            speed = max(1.0, (speW / totW * bst)).toInt() + 10
+            attack = max(1.0, (atkW / totW * bst)).toInt() + reservedStats/reservedTraits
+            defense = max(1.0, (defW / totW * bst)).toInt() + reservedStats/reservedTraits
+            spatk = max(1.0, (spaW / totW * bst)).toInt() + reservedStats/reservedTraits
+            spdef = max(1.0, (spdW / totW * bst)).toInt() + reservedStats/reservedTraits
+            speed = max(1.0, (speW / totW * bst)).toInt() + reservedStats/reservedTraits
 
             // Fix up special too
             special = ceil((spatk + spdef) / 2.0).toInt()
         } else {
-            // Minimum 10 everything not including HP
-            var bst = bst() - 50
+            var bst = bst() - reservedStats
             val minimumHp = 35
 
             // Make weightings
@@ -323,11 +308,11 @@ data class Pokemon(val name: String, var primaryType: Type) {
             }
 
             // Handle the rest normally
-            attack = max(1.0, (atkW / totW * bst)).toInt() + 10
-            defense = max(1.0, (defW / totW * bst)).toInt() + 10
-            spatk = max(1.0, (spaW / totW * bst)).toInt() + 10
-            spdef = max(1.0, (spdW / totW * bst)).toInt() + 10
-            speed = max(1.0, (speW / totW * bst)).toInt() + 10
+            attack = max(1.0, (atkW / totW * bst)).toInt() + reservedStats/reservedTraits
+            defense = max(1.0, (defW / totW * bst)).toInt() + reservedStats/reservedTraits
+            spatk = max(1.0, (spaW / totW * bst)).toInt() + reservedStats/reservedTraits
+            spdef = max(1.0, (spdW / totW * bst)).toInt() + reservedStats/reservedTraits
+            speed = max(1.0, (speW / totW * bst)).toInt() + reservedStats/reservedTraits
 
             // Fix up special too
             special = ceil((spatk + spdef) / 2.0).toInt()
@@ -375,24 +360,83 @@ data class Pokemon(val name: String, var primaryType: Type) {
         spdef = min(max(1.0, evolvesFrom.spdef * bstRatio).toInt(), maximumStat) + hpArray[4]
         special = ceil((spatk + spdef) / 2.0).toInt()
     }
-    // TODO: Make Evolution class, add nextGaussian to RandomSource
+
+    private fun skewedGaussian(random: RandomSource, statBucket: StatBucket): Double {
+        val gaussian: Double = random.nextDouble()
+        val centering = 0.5
+        val exponentialFunction: Double = exp(gaussian * statBucket.skew)
+        val skewedCdf = (1 - exponentialFunction) / (2 * (1 + exponentialFunction)) + centering
+        val deviation = gaussian * skewedCdf * statBucket.standardDeviation
+        return statBucket.median + deviation
+    }
+
+    private fun distributeBstRandomly(random: RandomSource, bst: Int, statMinMax: Pair<Int, Int>, hpMinMax: Pair<Int, Int>): List<Int> {
+        val stats = IntArray(6)
+
+        // Track remaining bsts, reserving the min for stats as a worst-case scenario
+        // We know HP is one of the stats, so we only use statMinMax for the remaining stats
+        val remainingBsts = bst - hpMinMax.first - (statMinMax.first * (stats.size - 1))
+
+        // Generate random break points as percent weights for all but 1 stat
+        val breakpoints = DoubleArray(stats.size-1) { random.nextDouble() }.sorted()
+
+        // First breakpoint is HP. Handle separately to avoid consuming too few BSTs
+        var thisStat = (breakpoints[0] * remainingBsts).toInt()
+        stats[0] = min(max(thisStat, hpMinMax.first), hpMinMax.second)
+
+        for (i in 1 until stats.size-1) {
+            // thisStat is the gap between this breakpoint and the previous
+            thisStat = ((breakpoints[i] - breakpoints[i-1]) * remainingBsts).toInt()
+            // Try to keep stat as stat, but increase to min or lower to max if outside min-max range
+            stats[i] = min(max(thisStat, statMinMax.first), statMinMax.second)
+        }
+
+        // The last stat is the remaining bst
+        stats[5] = bst - stats.sum()
+        stats[5] = min(max(stats[5], statMinMax.first), statMinMax.second)
+
+        // Adjust stats to ensure they add up to the total bst
+        // Ignore HP to avoid skewing
+        var overUnder = stats.sum() - bst
+        while (overUnder != 0) {
+            for (i in 1 until 6) {
+                // Too many stats were used
+                if (overUnder > 0) {
+                    var delta = max((random.nextDouble() * overUnder).toInt(), 1)
+                    // Either subtract the stats suggested, or the maximum amount available without exceeding min
+                    delta = min(delta, stats[i] - statMinMax.first)
+                    stats[i] -= delta
+                    overUnder -= delta
+                }
+                // Too few stats were used
+                else if (overUnder < 0) {
+                    var delta = min((random.nextDouble() * overUnder).toInt(), -1)
+                    // Either add the stats suggested, or the maximum amount available without exceeding max
+                    delta = min(delta, stats[i] - statMinMax.second)
+                    stats[i] -= delta
+                    overUnder -= delta
+                }
+                // We're at 0, end the loop
+                else break
+            }
+        }
+
+        return stats.toList()
+    }
 //    fun randomizeStatsNoRestrictions(random: RandomSource, evolutionSanity: Boolean) {
-//        val weightSd = 0.16
+//        // Stat value being manually assigned
+//        val reservedStats: Int = 50
+//        // Number of stats reservedStats is being distributed to
+//        val reservedTraits: Int = 5
+//        // Total possible percent (100) divided by stats available (6)
+//        val weightSd = 100/6
 //        // TODO: Revisit shedninja
 //        if (number == 292) {
 //            // Shedinja is horribly broken unless we restrict him to 1HP.
-//            val bst: Int
-//            bst = if (evolutionSanity) {
-//                (PK_1EVO_DIFF_MEDIAN
-//                        + skewedGaussian(random.nextGaussian(), PK_1EVO_DIFF_SKEW) * PK_1EVO_DIFF_SD
-//                        - 51).toInt()
-//            } else {
-//                (GENERAL_MEDIAN
-//                        + skewedGaussian(
-//                    random.nextGaussian(),
-//                    GENERAL_SKEW
-//                ) * GENERAL_SD - 51).toInt()
-//            }
+//            val reserveHP = 1
+//            val statBucket = if (evolutionSanity) StatBucket.NO_EVOS else StatBucket.GENERIC
+//            val bst = (skewedGaussian(random, statBucket) - reservedStats / reservedTraits - reserveHP).toInt()
+//
 //            // Make weightings
 //            val atkW = max(0.0, min(1.0, random.nextGaussian() * weightSd + 0.5))
 //            val defW = max(0.0, min(1.0, random.nextGaussian() * weightSd + 0.5))
@@ -410,53 +454,12 @@ data class Pokemon(val name: String, var primaryType: Type) {
 //            // Fix up special too
 //            special = ceil(((spatk + spdef) / 2.0f).toDouble()).toInt()
 //        } else {
-//            // Minimum 10 everything not including HP
-//            var bst: Int
-//            if (evolutionSanity) {
-//                if (evolutionsFrom.size > 0) {
-//                    var pk2Evos = false
-//                    for (ev in evolutionsFrom) {
-//                        // If any of the targets here evolve, the original
-//                        // Pokemon has 2+ stages.
-//                        if (ev.to.evolutionsFrom.size() > 0) {
-//                            pk2Evos = true
-//                            break
-//                        }
-//                    }
-//                    bst = if (pk2Evos) {
-//                        // First evo of 3 stages
-//                        (EVO1_2EVOS_MEDIAN
-//                                + skewedGaussian(random.nextGaussian(), EVO1_2EVOS_SKEW)
-//                                * EVO1_2EVOS_SD
-//                                - 50).toInt()
-//                    } else {
-//                        // First evo of 2 stages
-//                        (EVO1_1EVO_MEDIAN
-//                                + skewedGaussian(random.nextGaussian(), EVO1_1EVO_SKEW)
-//                                * EVO1_1EVO_SD
-//                                - 50).toInt()
-//                    }
-//                } else {
-//                    bst = if (evolutionsTo.size > 0) {
-//                        // Last evo, doesn't carry stats
-//                        (MAX_EVO_MEDIAN
-//                                + skewedGaussian(random.nextGaussian(), MAX_EVO_SKEW) * MAX_EVO_SD
-//                                - 50).toInt()
-//                    } else {
-//                        // No evolutions, no pre-evolutions
-//                        (NO_EVO_MEDIAN
-//                                + skewedGaussian(random.nextGaussian(), NO_EVO_SKEW) * NO_EVO_SD
-//                                - 50).toInt()
-//                    }
-//                }
-//            } else {
-//                // No 'Follow evolutions'
-//                bst = (GENERAL_MEDIAN
-//                        + skewedGaussian(
-//                    random.nextGaussian(),
-//                    GENERAL_SKEW
-//                ) * GENERAL_SD - 50).toInt()
+//            val skewedValue = when {
+//                evolutionSanity && evolutionsFrom.isNotEmpty() -> skewedGaussian(random, StatBucket.HAS_EVOS)
+//                evolutionSanity -> skewedGaussian(random, StatBucket.NO_EVOS)
+//                else -> skewedGaussian(random, StatBucket.GENERIC)
 //            }
+//            val bst = (skewedValue - reservedStats / reservedTraits).toInt()
 //
 //            // Make weightings
 //            val hpW = max(0.01, min(1.0, random.nextGaussian() * weightSd + 0.5))
@@ -490,7 +493,6 @@ data class Pokemon(val name: String, var primaryType: Type) {
 //            randomizeStatsNoRestrictions(random, evolutionSanity)
 //        }
 //    }
-    // TODO: Create Evolution class, nextGaussian
 //    fun copyRandomizedStatsNoRestrictionsUpEvolution(
 //        evolvesFrom: Pokemon,
 //        random: RandomSource
@@ -530,11 +532,6 @@ data class Pokemon(val name: String, var primaryType: Type) {
 //        special = ceil(((spatk + spdef) / 2.0f).toDouble()).toInt()
 //    }
 
-    private fun skewedGaussian(gaussian: Double, skew: Double): Double {
-        val skewedCdf = ((1 - exp(-1.7 * gaussian * skew))
-                / (2 * (1 + exp(-1.7 * gaussian * skew))) + 0.5)
-        return 2 * gaussian * skewedCdf
-    }
     // TODO: Make nextGaussian
 //    fun copyCompletelyRandomizedStatsUpEvolution(
 //        evolvesFrom: Pokemon, random: RandomSource,
