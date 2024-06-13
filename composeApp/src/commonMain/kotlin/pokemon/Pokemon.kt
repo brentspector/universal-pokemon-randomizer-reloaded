@@ -1,19 +1,11 @@
 package pokemon
 
 import logicModules.RandomSource
-import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.exp
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.roundToInt
 
-enum class StatBucket(val median: Double, val standardDeviation: Double, val skew: Double) {
-    GENERIC(median = 411.5, standardDeviation = 108.5, skew = -0.1),
-    LEGENDARY(median = 650.0, standardDeviation = 60.0, skew = 0.5),
-    HAS_EVOS(median = 300.0, standardDeviation = 37.0, skew = -0.9),
-    NO_EVOS(median = 487.0, standardDeviation = 94.0, skew = -0.2)
-}
 data class Pokemon(val name: String, var primaryType: Type) {
     val number: Int = 0
     var secondaryType:Type? = null
@@ -41,8 +33,7 @@ data class Pokemon(val name: String, var primaryType: Type) {
     var frontSpritePointer: Int = 0
     var picDimensions: Int = 0
 
-    // TODO: Make ExpCurve class
-    //var growthCurve: ExpCurve? = null
+    var growthCurve: ExpCurve? = null
 
     var evolutionsFrom: MutableList<Evolution> = mutableListOf()
     var evolutionsTo: MutableList<Evolution> = mutableListOf()
@@ -378,4 +369,24 @@ data class Pokemon(val name: String, var primaryType: Type) {
             hp + attack + defense + spatk + spdef + speed
         }
     }
+}
+
+enum class ExpCurve() {
+    MEDIUM_FAST, ERRATIC, FLUCTUATING, MEDIUM_SLOW, FAST, SLOW;
+
+    companion object {
+        fun fromByte(byte: Byte): ExpCurve? {
+            return entries.firstOrNull { it.toByte() == byte }
+        }
+    }
+    fun toByte(): Byte {
+        return ordinal.toByte()
+    }
+}
+
+enum class StatBucket(val median: Double, val standardDeviation: Double, val skew: Double) {
+    GENERIC(median = 411.5, standardDeviation = 108.5, skew = -0.1),
+    LEGENDARY(median = 650.0, standardDeviation = 60.0, skew = 0.5),
+    HAS_EVOS(median = 300.0, standardDeviation = 37.0, skew = -0.9),
+    NO_EVOS(median = 487.0, standardDeviation = 94.0, skew = -0.2)
 }
