@@ -258,109 +258,10 @@ data class Pokemon(val name: String, var primaryType: Type) {
         special = ceil((spatk + spdef) / 2.0).toInt()
     }
 
-    fun randomizeStatsWithinBST(random: RandomSource) {
-        // TODO: Fix so that it's based on anything with Wonder Guard
-        // Stat value being manually assigned
-        val reservedStats: Int = 50
-        // Number of stats reservedStats is being distributed to
-        val reservedTraits: Int = 5
-        if (number == 292) {
-            // Shedinja is horribly broken unless we restrict him to 1HP.
-            val bst = bst() - reservedStats - 1
-
-            // Make weightings
-            val atkW = random.nextDouble()
-            val defW = random.nextDouble()
-            val spaW = random.nextDouble()
-            val spdW = random.nextDouble()
-            val speW = random.nextDouble()
-            val totW = atkW + defW + spaW + spdW + speW
-            hp = 1
-            attack = max(1.0, (atkW / totW * bst)).toInt() + reservedStats/reservedTraits
-            defense = max(1.0, (defW / totW * bst)).toInt() + reservedStats/reservedTraits
-            spatk = max(1.0, (spaW / totW * bst)).toInt() + reservedStats/reservedTraits
-            spdef = max(1.0, (spdW / totW * bst)).toInt() + reservedStats/reservedTraits
-            speed = max(1.0, (speW / totW * bst)).toInt() + reservedStats/reservedTraits
-
-            // Fix up special too
-            special = ceil((spatk + spdef) / 2.0).toInt()
-        } else {
-            var bst = bst() - reservedStats
-            val minimumHp = 35
-
-            // Make weightings
-            val hpW = random.nextDouble()
-            val atkW = random.nextDouble()
-            val defW = random.nextDouble()
-            val spaW = random.nextDouble()
-            val spdW = random.nextDouble()
-            val speW = random.nextDouble()
-            val totW = hpW + atkW + defW + spaW + spdW + speW
-
-            // TODO: Revisit and ensure the randomized stats match the total
-            // Handle HP specially to avoid skewing
-            val suggestedHp: Int = (hpW / totW * bst).roundToInt()
-            hp = max(suggestedHp, minimumHp)
-            // If the suggestedHP is lower than minimumHP, remove the difference
-            // from the remaining bst stat pool
-            if (suggestedHp < minimumHp) {
-                bst -= (minimumHp - suggestedHp)
-            }
-
-            // Handle the rest normally
-            attack = max(1.0, (atkW / totW * bst)).toInt() + reservedStats/reservedTraits
-            defense = max(1.0, (defW / totW * bst)).toInt() + reservedStats/reservedTraits
-            spatk = max(1.0, (spaW / totW * bst)).toInt() + reservedStats/reservedTraits
-            spdef = max(1.0, (spdW / totW * bst)).toInt() + reservedStats/reservedTraits
-            speed = max(1.0, (speW / totW * bst)).toInt() + reservedStats/reservedTraits
-
-            // Fix up special too
-            special = ceil((spatk + spdef) / 2.0).toInt()
-        }
-
-        // TODO: Revisit and see if this can be done without requiring reroll
-        // Check for something we can't store
-        if (hp > 255 || attack > 255 || defense > 255 || spatk > 255 || spdef > 255 || speed > 255) {
-            // re roll
-            randomizeStatsWithinBST(random)
-        }
+    fun usesWonderGuard(): Boolean {
+        // TODO: Replace 292 (Shedninja) with any Wonder Guard user
+        return number == 292
     }
-
-    fun copyRandomizedStatsUpEvolution(evolvesFrom: Pokemon, random: RandomSource) {
-        val maximumStat = 255
-        val cutHpGrowth = 0.1
-        val absoluteHpMax = maximumStat / (1 - cutHpGrowth )
-        val growthRatio = 1 + cutHpGrowth
-        val ourBST = bst().toDouble()
-        val theirBST = evolvesFrom.bst().toDouble()
-        val bstRatio = ourBST / theirBST
-
-        // Lower HP growth to allow other stats a chance to grow (except when growth is
-        // already under that growth)
-        hp = min(absoluteHpMax, max(1.0, (evolvesFrom.hp * bstRatio))).toInt()
-        val hpDiff = if (growthRatio < bstRatio) (hp * cutHpGrowth).toInt() else 0
-        hp -= hpDiff
-
-        // Convert HPDiff into series of ints
-        val hpInt = hpDiff / 5
-        val hpRem = hpDiff % 5
-        val hpArray = intArrayOf(hpInt, hpInt, hpInt, hpInt, hpInt)
-
-        // Add remainder to random spots in hpArray
-        repeat (hpRem) {
-            hpArray[abs(random.nextInt() % 5)]++
-        }
-
-        // TODO: Revisit and do not exceed 255, and redistribute the bst if it exceeds 255
-        // Add HPDiff to remaining stats
-        attack = min(max(1.0, evolvesFrom.attack * bstRatio).toInt(), maximumStat) + hpArray[0]
-        defense = min(max(1.0, evolvesFrom.defense * bstRatio).toInt(), maximumStat) + hpArray[1]
-        speed = min(max(1.0, evolvesFrom.speed * bstRatio).toInt(), maximumStat) + hpArray[2]
-        spatk = min(max(1.0, evolvesFrom.spatk * bstRatio).toInt(), maximumStat) + hpArray[3]
-        spdef = min(max(1.0, evolvesFrom.spdef * bstRatio).toInt(), maximumStat) + hpArray[4]
-        special = ceil((spatk + spdef) / 2.0).toInt()
-    }
-
     private fun skewedGaussian(random: RandomSource, statBucket: StatBucket): Double {
         val gaussian: Double = random.nextDouble()
         val centering = 0.5
@@ -370,7 +271,7 @@ data class Pokemon(val name: String, var primaryType: Type) {
         return statBucket.median + deviation
     }
 
-    private fun distributeBstRandomly(random: RandomSource, bst: Int, statMinMax: Pair<Int, Int>, hpMinMax: Pair<Int, Int>): List<Int> {
+    private fun distributeBstRandomly(random: RandomSource, bst: Int, statMinMax: Pair<Int, Int>, hpMinMax: Pair<Int, Int>) {
         val stats = IntArray(6)
 
         // Track remaining bsts, reserving the min for stats as a worst-case scenario
@@ -421,202 +322,30 @@ data class Pokemon(val name: String, var primaryType: Type) {
             }
         }
 
-        return stats.toList()
+        hp = stats[0]
+        attack = stats[1]
+        defense = stats[2]
+        spatk = stats[3]
+        spdef = stats[4]
+        speed = stats[5]
+        special = (spatk + spdef) / 2
     }
-//    fun randomizeStatsNoRestrictions(random: RandomSource, evolutionSanity: Boolean) {
-//        // Stat value being manually assigned
-//        val reservedStats: Int = 50
-//        // Number of stats reservedStats is being distributed to
-//        val reservedTraits: Int = 5
-//        // Total possible percent (100) divided by stats available (6)
-//        val weightSd = 100/6
-//        // TODO: Revisit shedninja
-//        if (number == 292) {
-//            // Shedinja is horribly broken unless we restrict him to 1HP.
-//            val reserveHP = 1
-//            val statBucket = if (evolutionSanity) StatBucket.NO_EVOS else StatBucket.GENERIC
-//            val bst = (skewedGaussian(random, statBucket) - reservedStats / reservedTraits - reserveHP).toInt()
-//
-//            // Make weightings
-//            val atkW = max(0.0, min(1.0, random.nextGaussian() * weightSd + 0.5))
-//            val defW = max(0.0, min(1.0, random.nextGaussian() * weightSd + 0.5))
-//            val spaW = max(0.0, min(1.0, random.nextGaussian() * weightSd + 0.5))
-//            val spdW = max(0.0, min(1.0, random.nextGaussian() * weightSd + 0.5))
-//            val speW = max(0.0, min(1.0, random.nextGaussian() * weightSd + 0.5))
-//            val totW = atkW + defW + spaW + spdW + speW
-//            hp = 1
-//            attack = max(1.0, java.lang.Math.round(atkW / totW * bst).toDouble()).toInt() + 10
-//            defense = max(1.0, java.lang.Math.round(defW / totW * bst).toDouble()).toInt() + 10
-//            spatk = max(1.0, java.lang.Math.round(spaW / totW * bst).toDouble()).toInt() + 10
-//            spdef = max(1.0, java.lang.Math.round(spdW / totW * bst).toDouble()).toInt() + 10
-//            speed = max(1.0, java.lang.Math.round(speW / totW * bst).toDouble()).toInt() + 10
-//
-//            // Fix up special too
-//            special = ceil(((spatk + spdef) / 2.0f).toDouble()).toInt()
-//        } else {
-//            val skewedValue = when {
-//                evolutionSanity && evolutionsFrom.isNotEmpty() -> skewedGaussian(random, StatBucket.HAS_EVOS)
-//                evolutionSanity -> skewedGaussian(random, StatBucket.NO_EVOS)
-//                else -> skewedGaussian(random, StatBucket.GENERIC)
-//            }
-//            val bst = (skewedValue - reservedStats / reservedTraits).toInt()
-//
-//            // Make weightings
-//            val hpW = max(0.01, min(1.0, random.nextGaussian() * weightSd + 0.5))
-//            val atkW = max(0.01, min(1.0, random.nextGaussian() * weightSd + 0.5))
-//            val defW = max(0.01, min(1.0, random.nextGaussian() * weightSd + 0.5))
-//            val spaW = max(0.01, min(1.0, random.nextGaussian() * weightSd + 0.5))
-//            val spdW = max(0.01, min(1.0, random.nextGaussian() * weightSd + 0.5))
-//            val speW = max(0.01, min(1.0, random.nextGaussian() * weightSd + 0.5))
-//            val totW = hpW + atkW + defW + spaW + spdW + speW
-//
-//            // Handle HP specially to avoid skewing
-//            val suggestedHP: Float = java.lang.Math.round(hpW / totW * bst).toFloat()
-//            hp = if (suggestedHP < 35) 35 else suggestedHP.toInt()
-//            // Remove any added stats from the remaining bst
-//            bst = (bst - if (suggestedHP < 35) 35 - suggestedHP else 0).toInt()
-//
-//            // Handle the rest normally
-//            attack = max(1.0, java.lang.Math.round(atkW / totW * bst).toDouble()).toInt() + 10
-//            defense = max(1.0, java.lang.Math.round(defW / totW * bst).toDouble()).toInt() + 10
-//            spatk = max(1.0, java.lang.Math.round(spaW / totW * bst).toDouble()).toInt() + 10
-//            spdef = max(1.0, java.lang.Math.round(spdW / totW * bst).toDouble()).toInt() + 10
-//            speed = max(1.0, java.lang.Math.round(speW / totW * bst).toDouble()).toInt() + 10
-//
-//            // Fix up special too
-//            special = ceil(((spatk + spdef) / 2.0f).toDouble()).toInt()
-//        }
-//
-//        // Check for something we can't store
-//        if (hp > 255 || attack > 255 || defense > 255 || spatk > 255 || spdef > 255 || speed > 255) {
-//            // re roll
-//            randomizeStatsNoRestrictions(random, evolutionSanity)
-//        }
-//    }
-//    fun copyRandomizedStatsNoRestrictionsUpEvolution(
-//        evolvesFrom: Pokemon,
-//        random: RandomSource
-//    ) {
-//        val theirBST = evolvesFrom.bst().toDouble()
-//        var ourBST: Double
-//        var bstRatio: Double
-//        do {
-//            ourBST = if (evolutionsFrom.size > 0 || evolutionsTo[0].from.evolutionsTo.size() > 0) {
-//                // 3 stages
-//                (theirBST + PK_2EVOS_DIFF_MEDIAN
-//                        + (skewedGaussian(random.nextGaussian(), PK_2EVOS_DIFF_SKEW)
-//                        * PK_2EVOS_DIFF_SD))
-//            } else {
-//                // 2 stages
-//                (theirBST + PK_1EVO_DIFF_MEDIAN
-//                        + (skewedGaussian(random.nextGaussian(), PK_1EVO_DIFF_SKEW)
-//                        * PK_1EVO_DIFF_SD))
-//            }
-//            bstRatio = ourBST / theirBST
-//        } while (bstRatio < 1)
-//        hp =
-//            min(255.0, max(1.0, java.lang.Math.round(evolvesFrom.hp * bstRatio).toDouble()))
-//                .toInt()
-//        attack =
-//            min(255.0, max(1.0, java.lang.Math.round(evolvesFrom.attack * bstRatio).toDouble()))
-//                .toInt()
-//        defense =
-//            min(255.0, max(1.0, java.lang.Math.round(evolvesFrom.defense * bstRatio).toDouble()))
-//                .toInt()
-//        speed = min(255.0, max(1.0, java.lang.Math.round(evolvesFrom.speed * bstRatio).toDouble()))
-//            .toInt()
-//        spatk = min(255.0, max(1.0, java.lang.Math.round(evolvesFrom.spatk * bstRatio).toDouble()))
-//            .toInt()
-//        spdef = min(255.0, max(1.0, java.lang.Math.round(evolvesFrom.spdef * bstRatio).toDouble()))
-//            .toInt()
-//        special = ceil(((spatk + spdef) / 2.0f).toDouble()).toInt()
-//    }
 
-    // TODO: Make nextGaussian
-//    fun copyCompletelyRandomizedStatsUpEvolution(
-//        evolvesFrom: Pokemon, random: RandomSource,
-//        meanBST: Double
-//    ) {
-//        val theirBST = evolvesFrom.bst().toDouble()
-//        val ratio = meanBST / theirBST
-//        val mean: Double
-//        val stdDev: Double
-//
-//        // mean < 201 e.g. Caterpie, Weedle, Metapod, Kakuna, Magikarp
-//        if (ratio > 1.7) {
-//            mean = 0.5
-//            stdDev = 0.3 // Average multiplier = 1.5x (301), max multiplier = 2.7x (540)
-//        } else if (ratio > 1.4) {
-//            mean = 0.5
-//            stdDev = 0.2 // Average multiplier = 1.5x, (366) max multiplier = 2.3x (561)
-//        } else if (ratio > 1.0) {
-//            mean = 0.25
-//            stdDev = 0.1 // Average multiplier = 1.25x (427), max multiplier = 1.65x (564)
-//        } else if (ratio > 0.8) {
-//            mean = 0.0
-//            stdDev = 0.1 // Average multiplier = 1.0x (427), max multiplier = 1.4x (597)
-//        } else if (ratio > 0.7) {
-//            mean = -0.1
-//            stdDev = 0.1 // Average multiplier = 0.9x (488), max multiplier = 1.3x (634) [clamped
-//            // to 1.0x min]
-//        } else {
-//            mean = -0.2
-//            stdDev = 0.1 // Average multiplier = 0.8x (~500), max multiplier = 1.2x (760 = max roll
-//            // of above group max rolled again)
-//        }
-//        val multiplier = max(1.05 + mean + random.nextGaussian() * stdDev, 1.05)
-//
-//        // Allow each stat to vary by +- 5% so stats vary a little between them
-//        hp = min(
-//            255.0, max(
-//                1.0,
-//                java.lang.Math.round(evolvesFrom.hp * multiplier * (0.95 + random.nextDouble() / 10))
-//                    .toDouble()
-//            )
-//        )
-//            .toInt()
-//        attack = min(
-//            255.0, max(
-//                1.0,
-//                java.lang.Math.round(evolvesFrom.attack * multiplier * (0.95 + random.nextDouble() / 10))
-//                    .toDouble()
-//            )
-//        )
-//            .toInt()
-//        defense = min(
-//            255.0, max(
-//                1.0,
-//                java.lang.Math.round(evolvesFrom.defense * multiplier * (0.95 + random.nextDouble() / 10))
-//                    .toDouble()
-//            )
-//        )
-//            .toInt()
-//        speed = min(
-//            255.0, max(
-//                1.0,
-//                java.lang.Math.round(evolvesFrom.speed * multiplier * (0.95 + random.nextDouble() / 10))
-//                    .toDouble()
-//            )
-//        )
-//            .toInt()
-//        spatk = min(
-//            255.0, max(
-//                1.0,
-//                java.lang.Math.round(evolvesFrom.spatk * multiplier * (0.95 + random.nextDouble() / 10))
-//                    .toDouble()
-//            )
-//        )
-//            .toInt()
-//        spdef = min(
-//            255.0, max(
-//                1.0,
-//                java.lang.Math.round(evolvesFrom.spdef * multiplier * (0.95 + random.nextDouble() / 10))
-//                    .toDouble()
-//            )
-//        )
-//            .toInt()
-//        special = ceil(((spatk + spdef) / 2.0f).toDouble()).toInt()
-//    }
+    fun randomizeStats(random: RandomSource, evolutionSanity: Boolean, keepBST: Boolean = true) {
+        val statMinMax = 10 to 255
+        val hpMinMax = if (usesWonderGuard()) 1 to 1 else 35 to 255
+        val calculatedBST = if (keepBST) bst() else {
+            val statBucket = when {
+                usesWonderGuard() -> if (evolutionSanity) StatBucket.NO_EVOS else StatBucket.GENERIC
+                isLegendary() -> StatBucket.LEGENDARY
+                evolutionSanity && evolutionsFrom.isNotEmpty() -> StatBucket.HAS_EVOS
+                evolutionSanity -> StatBucket.NO_EVOS
+                else -> StatBucket.GENERIC
+            }
+            skewedGaussian(random, statBucket).toInt()
+        }
+        distributeBstRandomly(random, calculatedBST, statMinMax, hpMinMax)
+    }
 
     fun isLegendary(): Boolean {
         return legendaries.contains(number)
@@ -642,10 +371,8 @@ data class Pokemon(val name: String, var primaryType: Type) {
         return hp + attack + defense + special + speed
     }
 
-    // TODO: Revisit shedninja
     fun bstForPowerLevels(): Int {
-        // Take into account Shedinja's purposefully nerfed HP
-        return if (number == 292) {
+        return if (usesWonderGuard()) {
             (attack + defense + spatk + spdef + speed) * 6 / 5
         } else {
             hp + attack + defense + spatk + spdef + speed
