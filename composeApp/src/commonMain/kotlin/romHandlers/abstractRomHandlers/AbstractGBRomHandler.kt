@@ -5,10 +5,10 @@ import models.GBRom
 import models.Rom
 
 abstract class AbstractGBRomHandler(romConfiguration: RomConfiguration,
-                                    protected var rom: ByteArray)
+                                    protected var rom: GBRom)
     : AbstractRomHandler(romConfiguration)
 {
      override fun saveROM(): Rom {
-         return GBRom(rom)
+         return rom
      }
 }

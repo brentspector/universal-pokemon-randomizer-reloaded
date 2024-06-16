@@ -6,10 +6,10 @@ import models.NDSRom
 import models.Rom
 
 abstract class AbstractDSRomHandler(romConfiguration: RomConfiguration,
-                                    protected var rom: NDSFile)
+                                    protected var rom: NDSRom)
     : AbstractRomHandler(romConfiguration)
 {
     override fun saveROM(): Rom {
-        return NDSRom(rom)
+        return rom
     }
 }

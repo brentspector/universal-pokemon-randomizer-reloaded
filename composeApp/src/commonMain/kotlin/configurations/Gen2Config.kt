@@ -1,5 +1,7 @@
 package configurations
 
+import models.GBRom
+import models.Rom
 import romHandlers.Gen2RomHandler
 import romHandlers.abstractRomHandlers.AbstractRomHandler
 
@@ -14,11 +16,11 @@ open class SilverVersionEnglish : RomConfiguration {
         get() = TODO("Not yet implemented")
     override val numStarters: Int = 3
 
-    override fun isLoadable(rom: ByteArray): Boolean {
+    override fun isLoadable(rom: Rom): Boolean {
         return true
     }
-    override fun create(rom: ByteArray): AbstractRomHandler {
-        return Gen2RomHandler(this, rom)
+    override fun create(rom: Rom): AbstractRomHandler {
+        return Gen2RomHandler(this, rom as GBRom)
     }
 }
 

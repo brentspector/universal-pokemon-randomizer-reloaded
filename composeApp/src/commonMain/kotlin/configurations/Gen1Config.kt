@@ -34,6 +34,8 @@
  */
 package configurations
 
+import models.GBRom
+import models.Rom
 import romHandlers.Gen1RomHandler
 import romHandlers.abstractRomHandlers.AbstractRomHandler
 
@@ -77,12 +79,12 @@ abstract class Gen1RomConfiguration: RomConfiguration {
         /**
          * Auto-detects the appropriate Gen 1 ROM configuration based on the provided ROM byte array.
          *
-         * @param rom The byte array representing the ROM.
+         * @param rom The GBRom object representing the ROM.
          * @return The detected ROM configuration, or null if none is found.
          */
-        fun autoDetectGen1Rom(rom: ByteArray): RomConfiguration? {
+        fun autoDetectGen1Rom(rom: GBRom): RomConfiguration? {
             // Check ROM size validity
-            if (rom.size < MIN_ROM_SIZE || rom.size > MAX_ROM_SIZE) {
+            if (rom.value.size < MIN_ROM_SIZE || rom.value.size > MAX_ROM_SIZE) {
                 return null
             }
 
@@ -126,21 +128,24 @@ abstract class Gen1RomConfiguration: RomConfiguration {
      *
      * @return `true` if the ROM is loadable, `false` otherwise.
      */
-    override fun isLoadable(rom: ByteArray): Boolean {
+    override fun isLoadable(rom: Rom): Boolean {
+        if (rom !is GBRom)
+            return false;
+
         // Check ROM size validity
-        if (rom.size < MIN_ROM_SIZE || rom.size > MAX_ROM_SIZE) {
+        if (rom.value.size < MIN_ROM_SIZE || rom.value.size > MAX_ROM_SIZE) {
             return false
         }
 
         // Get the version and japanese flags from ROM
-        val romVersion = rom[VERSION_OFFSET].toInt() and 0xFF
-        val nonjap = rom[JP_FLAG_OFFSET].toInt() and 0xFF
+        val romVersion = rom.value[VERSION_OFFSET].toInt() and 0xFF
+        val nonjap = rom.value[JP_FLAG_OFFSET].toInt() and 0xFF
 
         return if (crcInHeader != -1) {
-            romSig(rom, romName) && version == romVersion && nonJapanese == nonjap &&
-                    crcInHeaderCheck(crcInHeader, rom)
+            romSig(rom.value, romName) && version == romVersion && nonJapanese == nonjap &&
+                    crcInHeaderCheck(crcInHeader, rom.value)
         } else {
-            romSig(rom, romName) && version == romVersion && nonJapanese == nonjap
+            romSig(rom.value, romName) && version == romVersion && nonJapanese == nonjap
         }
     }
 
@@ -151,8 +156,8 @@ abstract class Gen1RomConfiguration: RomConfiguration {
      * @param rom The byte array representing the ROM.
      * @return A ROM handler for Gen 1 ROMs.
      */
-    override fun create(rom: ByteArray): AbstractRomHandler {
-        return Gen1RomHandler(this, rom)
+    override fun create(rom: Rom): AbstractRomHandler {
+        return Gen1RomHandler(this, rom as GBRom)
     }
 }
 

@@ -6,6 +6,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
+import androidx.compose.ui.text.toLowerCase
+import androidx.core.net.toFile
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import viewModels.RandomizerViewModel.loadROM
@@ -14,6 +16,7 @@ import java.io.FileOutputStream
 import models.Rom
 import models.GBRom
 import models.NDSRom
+import models.NDSFile
 
 class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry, private val contentResolver: ContentResolver)
     : DefaultLifecycleObserver {
@@ -31,7 +34,7 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
         try {
             if (uri != null) {
                 contentResolver.openInputStream(uri)?.use {
-                    loadROM(it.readBytes())
+                    loadROM(GBRom(it.readBytes()))
                 }
             }
         } catch (e: Throwable) {
@@ -43,13 +46,9 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
         try {
             val rom: Rom = randomizer.saveROM()
 
-            if (rom is GBRom) {
-                var gbRom = rom as GBRom
-                saveBytes(contentResolver, uri, gbRom.value)
-            }
-
-            if (rom is NDSRom) {
-                var ndsRom = rom as NDSRom
+            when (rom) {
+                is GBRom -> saveBytes(contentResolver, uri, rom.value)
+                is NDSRom -> saveNDSFile(contentResolver, uri, rom.value)
             }
         } catch (e: Throwable) {
             e.printStackTrace()
@@ -64,6 +63,17 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
                 }
             }
         }
+    }
+
+    private fun saveNDSFile(contentResolver: ContentResolver, uri: Uri?, rom: NDSFile) {
+
+    }
+
+    private fun getExtension(filename: String?): String {
+        if (filename == null)
+            return ""
+
+        return filename.substring(filename.lastIndexOf(".") + 1)
     }
 }
 

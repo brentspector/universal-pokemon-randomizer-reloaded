@@ -1,10 +1,10 @@
 package romHandlers
 
 import configurations.RomConfiguration
-import models.NDSFile
+import models.NDSRom
 import romHandlers.abstractRomHandlers.AbstractDSRomHandler
 
-class Gen5RomHandler(romConfiguration: RomConfiguration, rom: NDSFile)
+class Gen5RomHandler(romConfiguration: RomConfiguration, rom: NDSRom)
     : AbstractDSRomHandler(romConfiguration, rom) {
 
 }
