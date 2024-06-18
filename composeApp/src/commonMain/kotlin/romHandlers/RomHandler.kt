@@ -10,4 +10,5 @@ interface RomHandler {
     fun randomizeStarters()
 
     fun setStarters(starters: IntArray)
+    fun loadRom()
 }

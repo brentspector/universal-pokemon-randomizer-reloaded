@@ -6,6 +6,9 @@ import viewModels.StarterPokemonViewModel
 
 
 class Randomizer(private val romHandler: RomHandler) {
+    init {
+        romHandler.loadRom()
+    }
     fun randomize(filename: String): Int {
         val seed: Long = RandomSource.pickSeed()
         return randomize(filename, seed)

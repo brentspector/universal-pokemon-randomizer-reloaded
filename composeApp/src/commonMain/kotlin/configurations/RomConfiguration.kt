@@ -28,6 +28,12 @@ interface RomConfiguration {
      */
     val numStarters: Int
 
+    val pokemonNamesOffset: Int
+    val pokemonNamesLength: Int
+    val internalPokemonCount: Int
+    val pokemonStatsOffset: Int
+    val mewStatsOffset: Int
+
     fun isLoadable(rom: ByteArray): Boolean
     fun create(rom: ByteArray): RomHandler
 }

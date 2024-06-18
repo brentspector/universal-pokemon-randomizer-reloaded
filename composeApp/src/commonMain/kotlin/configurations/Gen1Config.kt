@@ -49,6 +49,10 @@ abstract class Gen1RomConfiguration: RomConfiguration {
         const val VERSION_OFFSET = 0x14C
         const val CRC_OFFSET = 0x14E
         const val ROM_SIG_OFFSET = 0x134
+        const val STRING_TERMINATOR = 0x50
+        const val MEW_INDEX = 151
+        const val MAROWAK_INDEX = 105
+        const val BASE_STATS_ENTRY_SIZE = 0x1C
 
         // List of ROM configurations for loops
         private val roms = mutableListOf<Gen1RomConfiguration>().apply {
@@ -169,6 +173,12 @@ open class RedVersionUSA: Gen1RomConfiguration() {
     override val version: Int = 0
     override val romName: String = "POKEMON RED"
     override val numStarters: Int = 3
+    // TODO: Update these values
+    override val pokemonNamesOffset: Int= 0
+    override val pokemonNamesLength: Int = 0
+    override val internalPokemonCount: Int = 0
+    override val pokemonStatsOffset: Int = 0
+    override val mewStatsOffset: Int = 0x425B
 }
 
 /**
@@ -267,6 +277,7 @@ open class YellowVersionUSA : RedVersionUSA() {
  */
 class YellowVersionJapan : YellowVersionUSA() {
     override val nonJapanese: Int = 0
+    override val mewStatsOffset: Int = 0
 }
 
 /**
@@ -281,6 +292,7 @@ class YellowVersionFrance : YellowVersionUSA() {
  */
 class YellowVersionSpain : YellowVersionUSA() {
     override val romName: String = "POKEMON YELAPSS"
+
 }
 
 /**
