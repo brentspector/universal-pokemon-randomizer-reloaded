@@ -3,9 +3,10 @@ package romHandlers.abstractRomHandlers
 import configurations.RomConfiguration
 import models.Rom
 import pokemon.Pokemon
+import pokemon.Type
 
 abstract class AbstractRomHandler(private val romConfiguration: RomConfiguration) {
-    private val allPokes: MutableList<Pokemon> = mutableListOf(Pokemon("Default"))
+    private val allPokes: MutableList<Pokemon> = mutableListOf(Pokemon("Default", Type.NORMAL))
     private val starterPokes: MutableList<Pokemon> = mutableListOf()
     fun getPokemon(): MutableList<Pokemon> {
         return allPokes
@@ -15,7 +16,7 @@ abstract class AbstractRomHandler(private val romConfiguration: RomConfiguration
         return allPokes[number]
     }
     fun randomPokemon(): Pokemon {
-        return Pokemon("")
+        return Pokemon("", Type.NORMAL)
     }
 
     fun randomizeStarters() {
