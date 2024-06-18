@@ -1,6 +1,10 @@
 package romHandlers
 
 import configurations.RomConfiguration
-class Gen4RomHandler(romConfiguration: RomConfiguration) : AbstractDSRomHandler(romConfiguration) {
+import models.NDSRom
+import romHandlers.abstractRomHandlers.AbstractDSRomHandler
+
+class Gen4RomHandler(romConfiguration: RomConfiguration, rom: NDSRom)
+    : AbstractDSRomHandler(romConfiguration, rom) {
 
 }

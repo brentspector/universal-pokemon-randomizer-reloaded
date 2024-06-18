@@ -1,6 +1,10 @@
 package romHandlers
 
 import configurations.RomConfiguration
-class Gen3RomHandler(romConfiguration: RomConfiguration) : AbstractGBRomHandler(romConfiguration) {
+import models.GBRom
+import romHandlers.abstractRomHandlers.AbstractGBRomHandler
+
+class Gen3RomHandler(romConfiguration: RomConfiguration, rom: GBRom)
+    : AbstractGBRomHandler(romConfiguration, rom) {
 
 }

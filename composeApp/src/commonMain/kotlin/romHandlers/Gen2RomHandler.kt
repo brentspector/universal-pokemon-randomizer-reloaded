@@ -1,8 +1,10 @@
 package romHandlers
 
 import configurations.RomConfiguration
+import models.GBRom
+import romHandlers.abstractRomHandlers.AbstractGBRomHandler
 
-// Gen4RomHandler.kt
-class Gen2RomHandler(romConfiguration: RomConfiguration) : AbstractGBCRomHandler(romConfiguration) {
+class Gen2RomHandler(romConfiguration: RomConfiguration, rom: GBRom)
+    : AbstractGBRomHandler(romConfiguration, rom) {
 
 }
