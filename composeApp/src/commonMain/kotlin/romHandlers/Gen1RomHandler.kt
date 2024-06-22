@@ -2,16 +2,18 @@ package romHandlers
 
 import configurations.Gen1RomConfiguration
 import configurations.YellowVersionUSA
+import models.GBRom
+import romHandlers.abstractRomHandlers.AbstractGBRomHandler
 import pokemon.Pokemon
 import pokemon.Type
 import kotlin.experimental.and
 
-
-class Gen1RomHandler(private val romConfiguration: Gen1RomConfiguration) : AbstractGBCRomHandler(romConfiguration) {
+class Gen1RomHandler(romConfiguration: Gen1RomConfiguration, rom: GBRom)
+    : AbstractGBRomHandler(romConfiguration, rom) {
     private val pokes: MutableList<Pokemon> = mutableListOf()
     // TODO: Get the actual pokedexCount
     private val pokedexCount: Int = 151
-    override fun loadRom() {
+    fun loadRom() {
         loadPokemonStats()
     }
     private fun loadPokemonStats() {

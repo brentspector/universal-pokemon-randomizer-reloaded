@@ -1,6 +1,9 @@
 package configurations
 
-import romHandlers.RomHandler
+import models.GBRom
+import models.NDSRom
+import models.Rom
+import romHandlers.abstractRomHandlers.AbstractRomHandler
 
 interface RomConfiguration {
     /**
@@ -34,8 +37,8 @@ interface RomConfiguration {
     val pokemonStatsOffset: Int
     val mewStatsOffset: Int
 
-    fun isLoadable(rom: ByteArray): Boolean
-    fun create(rom: ByteArray): RomHandler
+    fun isLoadable(rom: Rom): Boolean
+    fun create(rom: Rom): AbstractRomHandler
 }
 
 val romConfigurations: Map<String, Lazy<RomConfiguration>> = mapOf(
@@ -44,8 +47,15 @@ val romConfigurations: Map<String, Lazy<RomConfiguration>> = mapOf(
     "Silver" to lazy { SilverVersionEnglish() }
 )
 
-fun autodetectRom(rom: ByteArray): RomConfiguration? {
-    Gen1RomConfiguration.autoDetectGen1Rom(rom)?.let { return it }
+fun autodetectRom(rom: Rom): RomConfiguration? {
+    when (rom) {
+        is GBRom -> {
+            Gen1RomConfiguration.autoDetectGen1Rom(rom)?.let { return it }
+        }
+        is NDSRom -> {
+
+        }
+    }
 
     // Not found
     return null

@@ -41,6 +41,8 @@ import configurations.RomConfiguration
 import configurations.autodetectRom
 import configurations.romConfigurations
 import logicModules.Randomizer
+import models.GBRom
+import models.Rom
 
 
 /**
@@ -50,7 +52,7 @@ import logicModules.Randomizer
  */
 object RandomizerViewModel {
     /** The byte array representing the currently loaded ROM. */
-    private var rom: ByteArray = ByteArray(0)
+    private var rom: Rom = GBRom(ByteArray(0))
 
     /**
      * A mutable state reference to the current randomizer instance.
@@ -60,11 +62,11 @@ object RandomizerViewModel {
 
     /**
      * Loads a new ROM into the view model.
-     * @param readBytes The byte array representing the ROM to be loaded.
+     * @param rom A wrapper around the ROM to be loaded.
      * Automatically generates a randomizer using auto-detection.
      */
-    fun loadROM(readBytes: ByteArray) {
-        rom = readBytes
+    fun loadROM(rom: Rom) {
+        this.rom = rom
         randomizer = generateRandomizer(autoDetect = true)
     }
 

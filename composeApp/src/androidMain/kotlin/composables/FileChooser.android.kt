@@ -6,10 +6,17 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
+import androidx.compose.ui.text.toLowerCase
+import androidx.core.net.toFile
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import viewModels.RandomizerViewModel.loadROM
+import viewModels.RandomizerViewModel.randomizer;
 import java.io.FileOutputStream
+import models.Rom
+import models.GBRom
+import models.NDSRom
+import models.NDSFile
 
 class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry, private val contentResolver: ContentResolver)
     : DefaultLifecycleObserver {
@@ -27,7 +34,7 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
         try {
             if (uri != null) {
                 contentResolver.openInputStream(uri)?.use {
-                    loadROM(it.readBytes())
+                    loadROM(GBRom(it.readBytes()))
                 }
             }
         } catch (e: Throwable) {
@@ -37,19 +44,36 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
 
     private fun writeFile(contentResolver: ContentResolver, uri: Uri?) {
         try {
-            if (uri != null) {
-                contentResolver.openFileDescriptor(uri, "w")?.use { fileDescriptor ->
-                    FileOutputStream(fileDescriptor.fileDescriptor).use {
-                        it.write(
-                            ("Overwritten at ${System.currentTimeMillis()}\n")
-                                .toByteArray()
-                        )
-                    }
-                }
+            val rom: Rom = randomizer.saveROM()
+
+            when (rom) {
+                is GBRom -> saveBytes(contentResolver, uri, rom.value)
+                is NDSRom -> saveNDSFile(contentResolver, uri, rom.value)
             }
         } catch (e: Throwable) {
             e.printStackTrace()
         }
+    }
+
+    private fun saveBytes(contentResolver: ContentResolver, uri: Uri?, rom: ByteArray) {
+        if (uri != null) {
+            contentResolver.openFileDescriptor(uri, "w")?.use { fileDescriptor ->
+                FileOutputStream(fileDescriptor.fileDescriptor).use {
+                    it.write(rom)
+                }
+            }
+        }
+    }
+
+    private fun saveNDSFile(contentResolver: ContentResolver, uri: Uri?, rom: NDSFile) {
+
+    }
+
+    private fun getExtension(filename: String?): String {
+        if (filename == null)
+            return ""
+
+        return filename.substring(filename.lastIndexOf(".") + 1)
     }
 }
 
