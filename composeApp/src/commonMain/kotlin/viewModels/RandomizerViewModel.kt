@@ -61,13 +61,13 @@ object RandomizerViewModel {
     var randomizer by mutableStateOf(generateRandomizer())
 
     /**
-     * Loads a new ROM into the view model.
+     * Loads a new ROM into the view model. Automatically generates a randomizer using auto-detection.
      * @param rom A wrapper around the ROM to be loaded.
-     * Automatically generates a randomizer using auto-detection.
      */
     fun loadROM(rom: Rom) {
         this.rom = rom
         randomizer = generateRandomizer(autoDetect = true)
+        randomizer.parseRom()
     }
 
     /**
@@ -106,7 +106,6 @@ object RandomizerViewModel {
     /**
      * Retrieves the default configuration.
      * @return The default configuration.
-     * @throws Exception if the default configuration is not loadable.
      */
     private fun getDefaultConfig(): RomConfiguration {
         return romConfigurations["Default"]!!.value

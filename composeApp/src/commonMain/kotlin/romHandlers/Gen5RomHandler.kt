@@ -6,5 +6,7 @@ import romHandlers.abstractRomHandlers.AbstractDSRomHandler
 
 class Gen5RomHandler(romConfiguration: RomConfiguration, rom: NDSRom)
     : AbstractDSRomHandler(romConfiguration, rom) {
-
+    override fun parseRom() {
+        TODO("Not yet implemented")
+    }
 }

@@ -29,5 +29,6 @@ abstract class AbstractRomHandler(val romConfiguration: RomConfiguration) {
         starterPokes.addAll(starters.take(romConfiguration.numStarters).map { getPokemonByNumber(it) })
     }
 
+    abstract fun parseRom()
     abstract fun saveROM(): Rom
 }

@@ -179,11 +179,12 @@ open class RedVersionUSA: Gen1RomConfiguration() {
     override val romName: String = "POKEMON RED"
     override val numStarters: Int = 3
     // TODO: Update these values
-    override val pokemonNamesOffset: Int= 0
-    override val pokemonNamesLength: Int = 0
-    override val internalPokemonCount: Int = 0
-    override val pokemonStatsOffset: Int = 0
+    override val pokemonNamesOffset: Int= 0x1C21E
+    override val pokemonNamesLength: Int = 10
+    override val internalPokemonCount: Int = 190
+    override val pokemonStatsOffset: Int = 0x383DE
     override val mewStatsOffset: Int = 0x425B
+    override val textLookup: TextLookup = TextLookup.RBY_ENGLISH
 }
 
 /**
@@ -191,6 +192,10 @@ open class RedVersionUSA: Gen1RomConfiguration() {
  */
 class RedVersionJapan : RedVersionUSA() {
     override val nonJapanese: Int = 0
+    override val pokemonStatsOffset: Int = 0x38000
+    override val mewStatsOffset: Int = 0x4200
+    override val pokemonNamesOffset: Int = 0x39068
+    override val pokemonNamesLength: Int = 5
 }
 
 /**
@@ -236,6 +241,10 @@ open class BlueVersionUSA : RedVersionUSA() {
  */
 class BlueVersionJapan : BlueVersionUSA() {
     override val nonJapanese: Int = 0
+    override val pokemonStatsOffset: Int = 0x383DE
+    override val mewStatsOffset: Int = 0x425B
+    override val pokemonNamesOffset: Int = 0x39446
+    override val pokemonNamesLength: Int = 5
 }
 
 /**
@@ -275,6 +284,8 @@ class BlueVersionItaly : BlueVersionUSA() {
 open class YellowVersionUSA : RedVersionUSA() {
     override val romName: String = "POKEMON YELLOW"
     override val numStarters: Int = 2
+    override val mewStatsOffset: Int = 0
+    override val pokemonNamesOffset: Int = 0xE8000
 }
 
 /**
@@ -282,7 +293,10 @@ open class YellowVersionUSA : RedVersionUSA() {
  */
 class YellowVersionJapan : YellowVersionUSA() {
     override val nonJapanese: Int = 0
+    override val pokemonStatsOffset: Int = 0x383DE
     override val mewStatsOffset: Int = 0
+    override val pokemonNamesOffset: Int = 0x39462
+    override val pokemonNamesLength: Int = 5
 }
 
 /**

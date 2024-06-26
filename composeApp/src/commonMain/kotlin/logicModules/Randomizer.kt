@@ -22,6 +22,9 @@ class Randomizer(private val romHandler: AbstractRomHandler) {
         return 0
     }
 
+    fun parseRom() {
+        romHandler.parseRom()
+    }
     fun saveROM(): Rom {
         return romHandler.saveROM()
     }

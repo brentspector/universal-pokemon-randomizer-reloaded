@@ -36,6 +36,7 @@ interface RomConfiguration {
     val internalPokemonCount: Int
     val pokemonStatsOffset: Int
     val mewStatsOffset: Int
+    val textLookup: TextLookup
 
     fun isLoadable(rom: Rom): Boolean
     fun create(rom: Rom): AbstractRomHandler
