@@ -2,7 +2,7 @@ package configurations
 
 class TextLookup(private val map: MutableMap<Int, String>) {
     companion object {
-        public val GAMEBOY_JAP: TextLookup = TextLookup(mutableMapOf(
+        val GAMEBOY_JAP: TextLookup = TextLookup(mutableMapOf(
             0x05 to "ガ",
             0x06 to "ギ",
             0x07 to "グ",
@@ -183,7 +183,7 @@ class TextLookup(private val map: MutableMap<Int, String>) {
             0x57 to "\\e",
             0x58 to "\\r"
         ))
-        public val RBY_ENGLISH: TextLookup = TextLookup(mutableMapOf(
+        val RBY_ENGLISH: TextLookup = TextLookup(mutableMapOf(
             0x4A to "[pk]",
             0x54 to "[POKé]",
             0x74 to "№",
@@ -275,7 +275,7 @@ class TextLookup(private val map: MutableMap<Int, String>) {
     }
 
     // Accessor method to get values from the map
-    fun lookup(key: Int): String? {
-        return map[key]
+    fun lookup(key: UByte): String? {
+        return map[key.toInt()]
     }
 }

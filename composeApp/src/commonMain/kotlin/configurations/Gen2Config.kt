@@ -2,6 +2,7 @@ package configurations
 
 import models.GBRom
 import models.Rom
+import pokemon.Type
 import romHandlers.Gen2RomHandler
 import romHandlers.abstractRomHandlers.AbstractRomHandler
 
@@ -27,6 +28,9 @@ open class SilverVersionEnglish : RomConfiguration {
         get() = TODO("Not yet implemented")
 
     override val textLookup: TextLookup
+        get() = TODO("Not yet implemented")
+
+    override val typeTable: MutableMap<Int, Type>
         get() = TODO("Not yet implemented")
 
     override fun isLoadable(rom: Rom): Boolean {

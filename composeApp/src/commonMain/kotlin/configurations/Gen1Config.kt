@@ -36,6 +36,7 @@ package configurations
 
 import models.GBRom
 import models.Rom
+import pokemon.Type
 import romHandlers.Gen1RomHandler
 import romHandlers.abstractRomHandlers.AbstractRomHandler
 
@@ -55,6 +56,19 @@ abstract class Gen1RomConfiguration: RomConfiguration {
         const val MEW_INDEX = 151
         const val MAROWAK_INDEX = 105
         const val BASE_STATS_ENTRY_SIZE = 0x1C
+        const val BASE_STATS_HP_OFFSET = 1
+        const val BASE_STATS_ATTACK_OFFSET = 2
+        const val BASE_STATS_DEFENSE_OFFSET = 3
+        const val BASE_STATS_SPEED_OFFSET = 4
+        const val BASE_STATS_SPECIAL_OFFSET = 5
+        const val BASE_STATS_PRIMARY_TYPE_OFFSET = 6
+        const val BASE_STATS_SECONDARY_TYPE_OFFSET = 7
+        const val BASE_STATS_CATCH_RATE_OFFSET = 8
+        const val BASE_STATS_EXP_YIELD_OFFSET = 9
+        const val BASE_STATS_LEVEL1_MOVES_OFFSET = 15
+        const val BASE_STATS_GROWTH_CURVE_OFFSET = 19
+        const val BASE_STATS_TM_HM_COMPAT_OFFSET = 20
+
 
         // List of ROM configurations for loops
         private val roms = mutableListOf<Gen1RomConfiguration>().apply {
@@ -134,7 +148,7 @@ abstract class Gen1RomConfiguration: RomConfiguration {
      */
     override fun isLoadable(rom: Rom): Boolean {
         if (rom !is GBRom)
-            return false;
+            return false
 
         // Check ROM size validity
         if (rom.value.size < MIN_ROM_SIZE || rom.value.size > MAX_ROM_SIZE) {
@@ -185,6 +199,23 @@ open class RedVersionUSA: Gen1RomConfiguration() {
     override val pokemonStatsOffset: Int = 0x383DE
     override val mewStatsOffset: Int = 0x425B
     override val textLookup: TextLookup = TextLookup.RBY_ENGLISH
+    override val typeTable: MutableMap<Int, Type> = mutableMapOf(
+        0x00 to Type.NORMAL,
+        0x01 to Type.FIGHTING,
+        0x02 to Type.FLYING,
+        0x03 to Type.POISON,
+        0x04 to Type.GROUND,
+        0x05 to Type.ROCK,
+        0x07 to Type.BUG,
+        0x08 to Type.GHOST,
+        0x14 to Type.FIRE,
+        0x15 to Type.WATER,
+        0x16 to Type.GRASS,
+        0x17 to Type.ELECTRIC,
+        0x18 to Type.PSYCHIC,
+        0x19 to Type.ICE,
+        0x1A to Type.DRAGON
+    )
 }
 
 /**

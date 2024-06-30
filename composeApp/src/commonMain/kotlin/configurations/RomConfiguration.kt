@@ -3,6 +3,7 @@ package configurations
 import models.GBRom
 import models.NDSRom
 import models.Rom
+import pokemon.Type
 import romHandlers.abstractRomHandlers.AbstractRomHandler
 
 interface RomConfiguration {
@@ -37,6 +38,7 @@ interface RomConfiguration {
     val pokemonStatsOffset: Int
     val mewStatsOffset: Int
     val textLookup: TextLookup
+    val typeTable: MutableMap<Int, Type>
 
     fun isLoadable(rom: Rom): Boolean
     fun create(rom: Rom): AbstractRomHandler
