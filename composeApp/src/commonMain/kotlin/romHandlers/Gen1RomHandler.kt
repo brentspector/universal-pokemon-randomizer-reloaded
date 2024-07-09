@@ -6,28 +6,41 @@ import models.GBRom
 import pokemon.ExpCurve
 import pokemon.Pokemon
 import romHandlers.abstractRomHandlers.AbstractGBRomHandler
+import kotlin.math.max
 
 class Gen1RomHandler(romConfiguration: Gen1RomConfiguration, rom: GBRom)
     : AbstractGBRomHandler(romConfiguration, rom) {
-    private val pokes: MutableList<Pokemon> = mutableListOf(Pokemon(0))
-    private val pokeNames: MutableList<String> = mutableListOf()
-    // TODO: Get the actual pokedexCount
-    private val pokedexCount: Int = 151
+    private val pokeNames: MutableList<String> = mutableListOf("")
+    private val pokeNumToRBYTable: MutableMap<Int, Int> = mutableMapOf(0 to 0)
+    private val pokeRBYToNumTable: MutableMap<Int, Int> = mutableMapOf(0 to 0)
+    private var pokedexCount: Int = 0
     override fun parseRom() {
+        loadPokedexOrder()
         readPokemonNames()
         loadPokemonStats()
+    }
+
+    private fun loadPokedexOrder() {
+        for(i in 1..romConfiguration.internalPokemonCount) {
+            val pokedexNum: Int = readUnsignedByte(rom.value[romConfiguration.pokedexOrderOffset + i - 1])
+            getPokeRBYToNumTable()[i] = pokedexNum
+            if (pokedexNum != 0 && !getPokeNumToRBYTable().containsKey(pokedexNum)) {
+                getPokeNumToRBYTable()[pokedexNum] = i
+            }
+            pokedexCount = max(pokedexCount, pokedexNum)
+        }
     }
     private fun loadPokemonStats() {
         // Get base stats
         for (i in 1..pokedexCount) {
-            pokes.add(Pokemon(i))
+            getPokemon().add(Pokemon(i))
             // Change the offset to mewStatsOffset if this is not Yellow version
             val offset = when {
                 romConfiguration !is YellowVersionUSA && i == Gen1RomConfiguration.MEW_INDEX -> romConfiguration.mewStatsOffset
                 else -> romConfiguration.pokemonStatsOffset + (i - 1) * Gen1RomConfiguration.BASE_STATS_ENTRY_SIZE
             }
             // TODO: Verify YellowVersionUSA covers all children classes, otherwise make isYellow function
-            loadBasicPokeStats(pokes[i], offset)
+            loadBasicPokeStats(getPokemon()[i], offset)
         }
 
         // Evolutions
@@ -42,7 +55,7 @@ class Gen1RomHandler(romConfiguration: Gen1RomConfiguration, rom: GBRom)
     }
 
     private fun loadBasicPokeStats(pk: Pokemon, offset: Int) {
-        pk.name = pokeNames[getPokeNumToRBYTable()[pk.number]]
+        pk.name = pokeNames[getPokeNumToRBYTable()[pk.number]!!]
         pk.hp = readUnsignedByte(rom.value[offset + Gen1RomConfiguration.BASE_STATS_HP_OFFSET])
         pk.attack = readUnsignedByte(rom.value[offset + Gen1RomConfiguration.BASE_STATS_ATTACK_OFFSET])
         pk.defense = readUnsignedByte(rom.value[offset + Gen1RomConfiguration.BASE_STATS_DEFENSE_OFFSET])
@@ -67,13 +80,17 @@ class Gen1RomHandler(romConfiguration: Gen1RomConfiguration, rom: GBRom)
         pk.darkGrassHeldItem = -1
     }
 
-    private fun getPokeNumToRBYTable(): List<Int> {
-        return (1..256).toList()
+    private fun getPokeNumToRBYTable(): MutableMap<Int, Int> {
+        return pokeNumToRBYTable
+    }
+
+    private fun getPokeRBYToNumTable(): MutableMap<Int, Int> {
+        return pokeRBYToNumTable
     }
 
     private fun populateEvolutions() {
         // TODO: Define
-        pokes.forEach { println(it) }
+        getPokemon().forEach { println(it) }
     }
 
     private fun readFixedLengthString(offset: Int, length: Int): String {

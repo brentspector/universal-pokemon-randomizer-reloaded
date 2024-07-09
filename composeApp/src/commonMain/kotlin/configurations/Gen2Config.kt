@@ -20,6 +20,8 @@ open class SilverVersionEnglish : RomConfiguration {
         get() = TODO("Not yet implemented")
     override val pokemonNamesLength: Int
         get() = TODO("Not yet implemented")
+    override val pokedexOrderOffset: Int
+        get() = TODO("Not yet implemented")
     override val internalPokemonCount: Int
         get() = TODO("Not yet implemented")
     override val pokemonStatsOffset: Int
@@ -32,6 +34,7 @@ open class SilverVersionEnglish : RomConfiguration {
 
     override val typeTable: MutableMap<Int, Type>
         get() = TODO("Not yet implemented")
+
 
     override fun isLoadable(rom: Rom): Boolean {
         return true

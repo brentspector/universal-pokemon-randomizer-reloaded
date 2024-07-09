@@ -34,6 +34,7 @@ interface RomConfiguration {
 
     val pokemonNamesOffset: Int
     val pokemonNamesLength: Int
+    val pokedexOrderOffset: Int
     val internalPokemonCount: Int
     val pokemonStatsOffset: Int
     val mewStatsOffset: Int

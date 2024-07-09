@@ -195,6 +195,7 @@ open class RedVersionUSA: Gen1RomConfiguration() {
     // TODO: Update these values
     override val pokemonNamesOffset: Int= 0x1C21E
     override val pokemonNamesLength: Int = 10
+    override val pokedexOrderOffset: Int = 0x41024
     override val internalPokemonCount: Int = 190
     override val pokemonStatsOffset: Int = 0x383DE
     override val mewStatsOffset: Int = 0x425B
@@ -227,6 +228,7 @@ class RedVersionJapan : RedVersionUSA() {
     override val mewStatsOffset: Int = 0x4200
     override val pokemonNamesOffset: Int = 0x39068
     override val pokemonNamesLength: Int = 5
+    override val pokedexOrderOffset: Int = 0x4279A
 }
 
 /**
@@ -234,6 +236,7 @@ class RedVersionJapan : RedVersionUSA() {
  */
 class RedVersionFrance : RedVersionUSA() {
     override val crcInHeader: Int = 0x7AFC
+    override val pokedexOrderOffset: Int = 0x40FAA
 }
 
 /**
@@ -241,6 +244,7 @@ class RedVersionFrance : RedVersionUSA() {
  */
 class RedVersionSpain : RedVersionUSA() {
     override val crcInHeader: Int = 0x384A
+    override val pokedexOrderOffset: Int = 0x40FB4
 }
 
 /**
@@ -248,6 +252,7 @@ class RedVersionSpain : RedVersionUSA() {
  */
 class RedVersionGermany : RedVersionUSA() {
     override val crcInHeader: Int = 0x5CDC
+    override val pokedexOrderOffset: Int = 0x40F96
 }
 
 /**
@@ -255,6 +260,7 @@ class RedVersionGermany : RedVersionUSA() {
  */
 class RedVersionItaly : RedVersionUSA() {
     override val crcInHeader: Int = 0x89D2
+    override val pokedexOrderOffset: Int = 0x40FB6
 }
 
 /**
@@ -276,6 +282,7 @@ class BlueVersionJapan : BlueVersionUSA() {
     override val mewStatsOffset: Int = 0x425B
     override val pokemonNamesOffset: Int = 0x39446
     override val pokemonNamesLength: Int = 5
+    override val pokedexOrderOffset: Int = 0x42784
 }
 
 /**
@@ -283,6 +290,7 @@ class BlueVersionJapan : BlueVersionUSA() {
  */
 class BlueVersionFrance : BlueVersionUSA() {
     override val crcInHeader: Int = 0x56A4
+    override val pokedexOrderOffset: Int = 0x40FAA
 }
 
 /**
@@ -290,6 +298,7 @@ class BlueVersionFrance : BlueVersionUSA() {
  */
 class BlueVersionSpain : BlueVersionUSA() {
     override val crcInHeader: Int = 0x14D7
+    override val pokedexOrderOffset: Int = 0x40FB4
 }
 
 /**
@@ -297,6 +306,7 @@ class BlueVersionSpain : BlueVersionUSA() {
  */
 class BlueVersionGermany : BlueVersionUSA() {
     override val crcInHeader: Int = 0x2EBC
+    override val pokedexOrderOffset: Int = 0x40F96
 }
 
 /**
@@ -304,6 +314,7 @@ class BlueVersionGermany : BlueVersionUSA() {
  */
 class BlueVersionItaly : BlueVersionUSA() {
     override val crcInHeader: Int = 0x5E9C
+    override val pokedexOrderOffset: Int = 0x40FB6
 }
 
 /**
@@ -317,6 +328,7 @@ open class YellowVersionUSA : RedVersionUSA() {
     override val numStarters: Int = 2
     override val mewStatsOffset: Int = 0
     override val pokemonNamesOffset: Int = 0xE8000
+    override val pokedexOrderOffset: Int = 0x410B1
 }
 
 /**
@@ -328,6 +340,7 @@ class YellowVersionJapan : YellowVersionUSA() {
     override val mewStatsOffset: Int = 0
     override val pokemonNamesOffset: Int = 0x39462
     override val pokemonNamesLength: Int = 5
+    override val pokedexOrderOffset: Int = 0x4282D
 }
 
 /**
@@ -335,6 +348,7 @@ class YellowVersionJapan : YellowVersionUSA() {
  */
 class YellowVersionFrance : YellowVersionUSA() {
     override val romName: String = "POKEMON YELAPSF"
+    override val pokedexOrderOffset: Int = 0x41036
 }
 
 /**
@@ -342,6 +356,7 @@ class YellowVersionFrance : YellowVersionUSA() {
  */
 class YellowVersionSpain : YellowVersionUSA() {
     override val romName: String = "POKEMON YELAPSS"
+    override val pokedexOrderOffset: Int = 0x41041
 
 }
 
@@ -350,6 +365,7 @@ class YellowVersionSpain : YellowVersionUSA() {
  */
 class YellowVersionGermany : YellowVersionUSA() {
     override val romName: String = "POKEMON YELAPSD"
+    override val pokedexOrderOffset: Int = 0x41023
 }
 
 /**
@@ -357,6 +373,7 @@ class YellowVersionGermany : YellowVersionUSA() {
  */
 class YellowVersionItaly : YellowVersionUSA() {
     override val romName: String = "POKEMON YELAPSI"
+    override val pokedexOrderOffset: Int = 0x41043
 }
 
 /**
