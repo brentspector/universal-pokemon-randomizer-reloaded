@@ -3,6 +3,8 @@ package romHandlers
 import configurations.Gen1RomConfiguration
 import configurations.YellowVersionUSA
 import models.GBRom
+import pokemon.Evolution
+import pokemon.EvolutionType
 import pokemon.ExpCurve
 import pokemon.Pokemon
 import romHandlers.abstractRomHandlers.AbstractGBRomHandler
@@ -89,8 +91,42 @@ class Gen1RomHandler(romConfiguration: Gen1RomConfiguration, rom: GBRom)
     }
 
     private fun populateEvolutions() {
-        // TODO: Define
-        getPokemon().forEach { println(it) }
+        getPokemon().forEach { pk ->
+            pk.apply {
+                evolutionsFrom.clear()
+                evolutionsTo.clear()
+            }
+        }
+
+        for (i in 1..romConfiguration.internalPokemonCount) {
+            val pointer = readWord(romConfiguration.pokemonMovesetsTableOffset + (i - 1) * 2)
+            var realPointer = calculateOffset(bankOf(romConfiguration.pokemonMovesetsTableOffset), pointer)
+
+            if (getPokeRBYToNumTable()[i] != 0) {
+                val thisPoke = getPokeRBYToNumTable()[i]
+                val pk = getPokemon()[thisPoke!!]
+
+                while (rom.value[realPointer].toInt() != 0) {
+                    val method = rom.value[realPointer].toInt()
+                    val type = EvolutionType.fromIndex(1, method)
+                    val otherPoke = getPokeRBYToNumTable()[readUnsignedByte(rom.value[realPointer + 2 + if (type == EvolutionType.STONE) 1 else 0])]
+                    val extraInfo = readUnsignedByte(rom.value[realPointer + 1])
+                    val evo = Evolution(pk, getPokemon()[otherPoke!!], true, type, extraInfo)
+
+                    if (!pk.evolutionsFrom.contains(evo)) {
+                        pk.evolutionsFrom.add(evo)
+                        getPokemon()[otherPoke].evolutionsTo.add(evo)
+                    }
+
+                    realPointer += if (type == EvolutionType.STONE) 4 else 3
+                }
+
+                if (pk.evolutionsFrom.size > 1) {
+                    pk.evolutionsFrom.forEach { it.carryStats = false }
+                }
+            }
+        }
+
     }
 
     private fun readFixedLengthString(offset: Int, length: Int): String {
@@ -120,5 +156,25 @@ class Gen1RomHandler(romConfiguration: Gen1RomConfiguration, rom: GBRom)
 
     private fun readUnsignedByte(byte: Byte): Int {
         return byte.toInt() and 0xFF
+    }
+
+    private fun readWord(offset: Int): Int {
+        return readWord(rom.value, offset)
+    }
+
+    private fun readWord(data: ByteArray, offset: Int): Int {
+        return readUnsignedByte(data[offset]) + (readUnsignedByte(data[offset+1]) shl 8)
+    }
+
+    private fun calculateOffset(bank: Int, pointer: Int): Int {
+        return if (pointer < Gen1RomConfiguration.BANK_SIZE) {
+            pointer
+        } else {
+            pointer % Gen1RomConfiguration.BANK_SIZE + bank * Gen1RomConfiguration.BANK_SIZE
+        }
+    }
+
+    private fun bankOf(offset: Int): Int {
+        return offset / Gen1RomConfiguration.BANK_SIZE
     }
 }

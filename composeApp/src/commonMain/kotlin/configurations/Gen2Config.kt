@@ -22,6 +22,8 @@ open class SilverVersionEnglish : RomConfiguration {
         get() = TODO("Not yet implemented")
     override val pokedexOrderOffset: Int
         get() = TODO("Not yet implemented")
+    override val pokemonMovesetsTableOffset: Int
+        get() = TODO("Not yet implemented")
     override val internalPokemonCount: Int
         get() = TODO("Not yet implemented")
     override val pokemonStatsOffset: Int

@@ -48,6 +48,7 @@ abstract class Gen1RomConfiguration: RomConfiguration {
         // Constants for shared Gen 1 ROM attributes
         const val MIN_ROM_SIZE = 0x80000
         const val MAX_ROM_SIZE = 0x200000
+        const val BANK_SIZE = 0x4000
         const val JP_FLAG_OFFSET = 0x14A
         const val VERSION_OFFSET = 0x14C
         const val CRC_OFFSET = 0x14E
@@ -196,6 +197,7 @@ open class RedVersionUSA: Gen1RomConfiguration() {
     override val pokemonNamesOffset: Int= 0x1C21E
     override val pokemonNamesLength: Int = 10
     override val pokedexOrderOffset: Int = 0x41024
+    override val pokemonMovesetsTableOffset: Int = 0x3B05C
     override val internalPokemonCount: Int = 190
     override val pokemonStatsOffset: Int = 0x383DE
     override val mewStatsOffset: Int = 0x425B
@@ -329,6 +331,7 @@ open class YellowVersionUSA : RedVersionUSA() {
     override val mewStatsOffset: Int = 0
     override val pokemonNamesOffset: Int = 0xE8000
     override val pokedexOrderOffset: Int = 0x410B1
+    override val pokemonMovesetsTableOffset: Int = 0x3B1E5
 }
 
 /**
