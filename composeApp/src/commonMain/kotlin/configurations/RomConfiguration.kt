@@ -3,6 +3,7 @@ package configurations
 import models.GBRom
 import models.NDSRom
 import models.Rom
+import pokemon.Type
 import romHandlers.abstractRomHandlers.AbstractRomHandler
 
 interface RomConfiguration {
@@ -30,6 +31,16 @@ interface RomConfiguration {
      * Number of starters this game supports
      */
     val numStarters: Int
+
+    val pokemonNamesOffset: Int
+    val pokemonNamesLength: Int
+    val pokedexOrderOffset: Int
+    val pokemonMovesetsTableOffset: Int
+    val internalPokemonCount: Int
+    val pokemonStatsOffset: Int
+    val mewStatsOffset: Int
+    val textLookup: TextLookup
+    val typeTable: MutableMap<Int, Type>
 
     fun isLoadable(rom: Rom): Boolean
     fun create(rom: Rom): AbstractRomHandler

@@ -6,8 +6,9 @@ import kotlin.math.exp
 import kotlin.math.max
 import kotlin.math.min
 
-data class Pokemon(val name: String, var primaryType: Type) {
-    val number: Int = 0
+data class Pokemon(var number: Int) {
+    var name: String = ""
+    var primaryType: Type = Type.HACK
     var secondaryType:Type? = null
 
     var hp: Int = 0
@@ -56,6 +57,7 @@ data class Pokemon(val name: String, var primaryType: Type) {
 
     // Allows recomputing isCyclic if the evolutionsFrom changes
     private var _isCyclic: Boolean? = null
+
     val isCyclic: Boolean
         get() {
             // Either get the calculated value, or compute, store, and return it
@@ -368,6 +370,12 @@ data class Pokemon(val name: String, var primaryType: Type) {
         } else {
             hp + attack + defense + spatk + spdef + speed
         }
+    }
+
+    override fun toString(): String {
+        return "Pokemon [name=$name, number=$number, primaryType=$primaryType, " +
+                "secondaryType=$secondaryType, hp=$hp attack=$attack, " +
+                "defense=$defense, spatk=$spatk, spdef=$spdef, speed=$speed]"
     }
 }
 

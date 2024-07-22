@@ -2,6 +2,7 @@ package configurations
 
 import models.GBRom
 import models.Rom
+import pokemon.Type
 import romHandlers.Gen2RomHandler
 import romHandlers.abstractRomHandlers.AbstractRomHandler
 
@@ -15,6 +16,27 @@ open class SilverVersionEnglish : RomConfiguration {
     override val romName: String
         get() = TODO("Not yet implemented")
     override val numStarters: Int = 3
+    override val pokemonNamesOffset: Int
+        get() = TODO("Not yet implemented")
+    override val pokemonNamesLength: Int
+        get() = TODO("Not yet implemented")
+    override val pokedexOrderOffset: Int
+        get() = TODO("Not yet implemented")
+    override val pokemonMovesetsTableOffset: Int
+        get() = TODO("Not yet implemented")
+    override val internalPokemonCount: Int
+        get() = TODO("Not yet implemented")
+    override val pokemonStatsOffset: Int
+        get() = TODO("Not yet implemented")
+    override val mewStatsOffset: Int
+        get() = TODO("Not yet implemented")
+
+    override val textLookup: TextLookup
+        get() = TODO("Not yet implemented")
+
+    override val typeTable: MutableMap<Int, Type>
+        get() = TODO("Not yet implemented")
+
 
     override fun isLoadable(rom: Rom): Boolean {
         return true

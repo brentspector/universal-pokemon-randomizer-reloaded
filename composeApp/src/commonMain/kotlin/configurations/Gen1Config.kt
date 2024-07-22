@@ -36,6 +36,7 @@ package configurations
 
 import models.GBRom
 import models.Rom
+import pokemon.Type
 import romHandlers.Gen1RomHandler
 import romHandlers.abstractRomHandlers.AbstractRomHandler
 
@@ -47,10 +48,28 @@ abstract class Gen1RomConfiguration: RomConfiguration {
         // Constants for shared Gen 1 ROM attributes
         const val MIN_ROM_SIZE = 0x80000
         const val MAX_ROM_SIZE = 0x200000
+        const val BANK_SIZE = 0x4000
         const val JP_FLAG_OFFSET = 0x14A
         const val VERSION_OFFSET = 0x14C
         const val CRC_OFFSET = 0x14E
         const val ROM_SIG_OFFSET = 0x134
+        const val STRING_TERMINATOR = 0x50
+        const val MEW_INDEX = 151
+        const val MAROWAK_INDEX = 105
+        const val BASE_STATS_ENTRY_SIZE = 0x1C
+        const val BASE_STATS_HP_OFFSET = 1
+        const val BASE_STATS_ATTACK_OFFSET = 2
+        const val BASE_STATS_DEFENSE_OFFSET = 3
+        const val BASE_STATS_SPEED_OFFSET = 4
+        const val BASE_STATS_SPECIAL_OFFSET = 5
+        const val BASE_STATS_PRIMARY_TYPE_OFFSET = 6
+        const val BASE_STATS_SECONDARY_TYPE_OFFSET = 7
+        const val BASE_STATS_CATCH_RATE_OFFSET = 8
+        const val BASE_STATS_EXP_YIELD_OFFSET = 9
+        const val BASE_STATS_LEVEL1_MOVES_OFFSET = 15
+        const val BASE_STATS_GROWTH_CURVE_OFFSET = 19
+        const val BASE_STATS_TM_HM_COMPAT_OFFSET = 20
+
 
         // List of ROM configurations for loops
         private val roms = mutableListOf<Gen1RomConfiguration>().apply {
@@ -130,7 +149,7 @@ abstract class Gen1RomConfiguration: RomConfiguration {
      */
     override fun isLoadable(rom: Rom): Boolean {
         if (rom !is GBRom)
-            return false;
+            return false
 
         // Check ROM size validity
         if (rom.value.size < MIN_ROM_SIZE || rom.value.size > MAX_ROM_SIZE) {
@@ -174,6 +193,32 @@ open class RedVersionUSA: Gen1RomConfiguration() {
     override val version: Int = 0
     override val romName: String = "POKEMON RED"
     override val numStarters: Int = 3
+    // TODO: Update these values
+    override val pokemonNamesOffset: Int= 0x1C21E
+    override val pokemonNamesLength: Int = 10
+    override val pokedexOrderOffset: Int = 0x41024
+    override val pokemonMovesetsTableOffset: Int = 0x3B05C
+    override val internalPokemonCount: Int = 190
+    override val pokemonStatsOffset: Int = 0x383DE
+    override val mewStatsOffset: Int = 0x425B
+    override val textLookup: TextLookup = TextLookup.RBY_ENGLISH
+    override val typeTable: MutableMap<Int, Type> = mutableMapOf(
+        0x00 to Type.NORMAL,
+        0x01 to Type.FIGHTING,
+        0x02 to Type.FLYING,
+        0x03 to Type.POISON,
+        0x04 to Type.GROUND,
+        0x05 to Type.ROCK,
+        0x07 to Type.BUG,
+        0x08 to Type.GHOST,
+        0x14 to Type.FIRE,
+        0x15 to Type.WATER,
+        0x16 to Type.GRASS,
+        0x17 to Type.ELECTRIC,
+        0x18 to Type.PSYCHIC,
+        0x19 to Type.ICE,
+        0x1A to Type.DRAGON
+    )
 }
 
 /**
@@ -181,6 +226,11 @@ open class RedVersionUSA: Gen1RomConfiguration() {
  */
 class RedVersionJapan : RedVersionUSA() {
     override val nonJapanese: Int = 0
+    override val pokemonStatsOffset: Int = 0x38000
+    override val mewStatsOffset: Int = 0x4200
+    override val pokemonNamesOffset: Int = 0x39068
+    override val pokemonNamesLength: Int = 5
+    override val pokedexOrderOffset: Int = 0x4279A
 }
 
 /**
@@ -188,6 +238,7 @@ class RedVersionJapan : RedVersionUSA() {
  */
 class RedVersionFrance : RedVersionUSA() {
     override val crcInHeader: Int = 0x7AFC
+    override val pokedexOrderOffset: Int = 0x40FAA
 }
 
 /**
@@ -195,6 +246,7 @@ class RedVersionFrance : RedVersionUSA() {
  */
 class RedVersionSpain : RedVersionUSA() {
     override val crcInHeader: Int = 0x384A
+    override val pokedexOrderOffset: Int = 0x40FB4
 }
 
 /**
@@ -202,6 +254,7 @@ class RedVersionSpain : RedVersionUSA() {
  */
 class RedVersionGermany : RedVersionUSA() {
     override val crcInHeader: Int = 0x5CDC
+    override val pokedexOrderOffset: Int = 0x40F96
 }
 
 /**
@@ -209,6 +262,7 @@ class RedVersionGermany : RedVersionUSA() {
  */
 class RedVersionItaly : RedVersionUSA() {
     override val crcInHeader: Int = 0x89D2
+    override val pokedexOrderOffset: Int = 0x40FB6
 }
 
 /**
@@ -226,6 +280,11 @@ open class BlueVersionUSA : RedVersionUSA() {
  */
 class BlueVersionJapan : BlueVersionUSA() {
     override val nonJapanese: Int = 0
+    override val pokemonStatsOffset: Int = 0x383DE
+    override val mewStatsOffset: Int = 0x425B
+    override val pokemonNamesOffset: Int = 0x39446
+    override val pokemonNamesLength: Int = 5
+    override val pokedexOrderOffset: Int = 0x42784
 }
 
 /**
@@ -233,6 +292,7 @@ class BlueVersionJapan : BlueVersionUSA() {
  */
 class BlueVersionFrance : BlueVersionUSA() {
     override val crcInHeader: Int = 0x56A4
+    override val pokedexOrderOffset: Int = 0x40FAA
 }
 
 /**
@@ -240,6 +300,7 @@ class BlueVersionFrance : BlueVersionUSA() {
  */
 class BlueVersionSpain : BlueVersionUSA() {
     override val crcInHeader: Int = 0x14D7
+    override val pokedexOrderOffset: Int = 0x40FB4
 }
 
 /**
@@ -247,6 +308,7 @@ class BlueVersionSpain : BlueVersionUSA() {
  */
 class BlueVersionGermany : BlueVersionUSA() {
     override val crcInHeader: Int = 0x2EBC
+    override val pokedexOrderOffset: Int = 0x40F96
 }
 
 /**
@@ -254,6 +316,7 @@ class BlueVersionGermany : BlueVersionUSA() {
  */
 class BlueVersionItaly : BlueVersionUSA() {
     override val crcInHeader: Int = 0x5E9C
+    override val pokedexOrderOffset: Int = 0x40FB6
 }
 
 /**
@@ -265,6 +328,10 @@ class BlueVersionItaly : BlueVersionUSA() {
 open class YellowVersionUSA : RedVersionUSA() {
     override val romName: String = "POKEMON YELLOW"
     override val numStarters: Int = 2
+    override val mewStatsOffset: Int = 0
+    override val pokemonNamesOffset: Int = 0xE8000
+    override val pokedexOrderOffset: Int = 0x410B1
+    override val pokemonMovesetsTableOffset: Int = 0x3B1E5
 }
 
 /**
@@ -272,6 +339,11 @@ open class YellowVersionUSA : RedVersionUSA() {
  */
 class YellowVersionJapan : YellowVersionUSA() {
     override val nonJapanese: Int = 0
+    override val pokemonStatsOffset: Int = 0x383DE
+    override val mewStatsOffset: Int = 0
+    override val pokemonNamesOffset: Int = 0x39462
+    override val pokemonNamesLength: Int = 5
+    override val pokedexOrderOffset: Int = 0x4282D
 }
 
 /**
@@ -279,6 +351,7 @@ class YellowVersionJapan : YellowVersionUSA() {
  */
 class YellowVersionFrance : YellowVersionUSA() {
     override val romName: String = "POKEMON YELAPSF"
+    override val pokedexOrderOffset: Int = 0x41036
 }
 
 /**
@@ -286,6 +359,8 @@ class YellowVersionFrance : YellowVersionUSA() {
  */
 class YellowVersionSpain : YellowVersionUSA() {
     override val romName: String = "POKEMON YELAPSS"
+    override val pokedexOrderOffset: Int = 0x41041
+
 }
 
 /**
@@ -293,6 +368,7 @@ class YellowVersionSpain : YellowVersionUSA() {
  */
 class YellowVersionGermany : YellowVersionUSA() {
     override val romName: String = "POKEMON YELAPSD"
+    override val pokedexOrderOffset: Int = 0x41023
 }
 
 /**
@@ -300,6 +376,7 @@ class YellowVersionGermany : YellowVersionUSA() {
  */
 class YellowVersionItaly : YellowVersionUSA() {
     override val romName: String = "POKEMON YELAPSI"
+    override val pokedexOrderOffset: Int = 0x41043
 }
 
 /**

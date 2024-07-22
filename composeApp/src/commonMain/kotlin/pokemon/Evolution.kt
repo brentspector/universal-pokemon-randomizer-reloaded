@@ -1,7 +1,8 @@
 package pokemon
 
-data class Evolution(var from: Pokemon, var to: Pokemon, var carryStats: Int,
-                         var type: EvolutionType, var extraInfo: Int) {
+data class Evolution(
+    var from: Pokemon, var to: Pokemon, var carryStats: Boolean,
+    var type: EvolutionType, var extraInfo: Int) {
 
     val typesDiffer = when {
         // 1 == 1
