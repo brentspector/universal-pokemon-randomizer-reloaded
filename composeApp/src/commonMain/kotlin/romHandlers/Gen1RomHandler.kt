@@ -100,7 +100,7 @@ class Gen1RomHandler(romConfiguration: Gen1RomConfiguration, rom: GBRom)
 
         for (i in 1..romConfiguration.internalPokemonCount) {
             val pointer = readWord(romConfiguration.pokemonMovesetsTableOffset + (i - 1) * 2)
-            var realPointer = calculateOffset(bankOf(romConfiguration.pokemonMovesetsTableOffset), pointer)
+            var realPointer = calculateOffset(romConfiguration.pokemonMovesetsTableOffset, pointer, Gen1RomConfiguration.BANK_SIZE)
 
             if (getPokeRBYToNumTable()[i] != 0) {
                 val thisPoke = getPokeRBYToNumTable()[i]
@@ -164,17 +164,5 @@ class Gen1RomHandler(romConfiguration: Gen1RomConfiguration, rom: GBRom)
 
     private fun readWord(data: ByteArray, offset: Int): Int {
         return readUnsignedByte(data[offset]) + (readUnsignedByte(data[offset+1]) shl 8)
-    }
-
-    private fun calculateOffset(bank: Int, pointer: Int): Int {
-        return if (pointer < Gen1RomConfiguration.BANK_SIZE) {
-            pointer
-        } else {
-            pointer % Gen1RomConfiguration.BANK_SIZE + bank * Gen1RomConfiguration.BANK_SIZE
-        }
-    }
-
-    private fun bankOf(offset: Int): Int {
-        return offset / Gen1RomConfiguration.BANK_SIZE
     }
 }
