@@ -126,43 +126,5 @@ class Gen1RomHandler(romConfiguration: Gen1RomConfiguration, rom: GBRom)
                 }
             }
         }
-
-    }
-
-    private fun readFixedLengthString(offset: Int, length: Int): String {
-        return readString(offset, length, false)
-    }
-
-    private fun readString(offset: Int, maxLength: Int, textEngineMode: Boolean): String {
-        return buildString {
-            for (c in 0 until maxLength) {
-                val currChar: UByte = rom.value[offset + c].toUByte()
-                val textChar = romConfiguration.textLookup.lookup(currChar)
-                if (textChar != null) {
-                    append(textChar)
-                    if (textEngineMode && (textChar == "\\r" || textChar == "\\e")) {
-                        break
-                    }
-                } else {
-                    if (currChar == Gen1RomConfiguration.STRING_TERMINATOR.toUByte()) {
-                        break
-                    } else {
-                        append("\\x${currChar.toString(16)}")
-                    }
-                }
-            }
-        }
-    }
-
-    private fun readUnsignedByte(byte: Byte): Int {
-        return byte.toInt() and 0xFF
-    }
-
-    private fun readWord(offset: Int): Int {
-        return readWord(rom.value, offset)
-    }
-
-    private fun readWord(data: ByteArray, offset: Int): Int {
-        return readUnsignedByte(data[offset]) + (readUnsignedByte(data[offset+1]) shl 8)
     }
 }
