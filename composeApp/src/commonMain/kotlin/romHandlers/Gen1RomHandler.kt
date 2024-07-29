@@ -2,11 +2,14 @@ package romHandlers
 
 import configurations.Gen1RomConfiguration
 import configurations.YellowVersionUSA
+import exceptions.RandomizationException
 import models.GBRom
+import models.Rom
 import pokemon.Evolution
 import pokemon.EvolutionType
 import pokemon.ExpCurve
 import pokemon.Pokemon
+import pokemon.Type
 import romHandlers.abstractRomHandlers.AbstractGBRomHandler
 import kotlin.math.max
 
@@ -20,6 +23,11 @@ class Gen1RomHandler(romConfiguration: Gen1RomConfiguration, rom: GBRom)
         loadPokedexOrder()
         readPokemonNames()
         loadPokemonStats()
+    }
+
+    override fun saveROM(): Rom {
+        savePokemonStats()
+        return rom
     }
 
     private fun loadPokedexOrder() {
@@ -126,5 +134,51 @@ class Gen1RomHandler(romConfiguration: Gen1RomConfiguration, rom: GBRom)
                 }
             }
         }
+    }
+
+    private fun savePokemonStats() {
+        // Write pokemon names
+        val offs = romConfiguration.pokemonNamesOffset
+        val nameLength = romConfiguration.pokemonNamesLength
+        for (i in 1..pokedexCount) {
+            val rbynum = getPokeNumToRBYTable()[i]
+            val stringOffset = offs + ((rbynum?.minus(1))?.times(nameLength) ?: throw RandomizationException("Unable to save pokemon stats. No value for $i in PokeNumToRBYTable"))
+            writeFixedLengthString(getPokemon()[i].name, stringOffset, nameLength)
+        }
+        // Write pokemon stats
+        for (i in 1..pokedexCount) {
+            if (i == Gen1RomConfiguration.MEW_INDEX) {
+                continue
+            }
+            saveBasicPokeStats(getPokemon()[i], romConfiguration.pokemonStatsOffset + (i - 1) * Gen1RomConfiguration.BASE_STATS_ENTRY_SIZE)
+        }
+        // Write MEW
+        val mewOffset = if (romConfiguration is YellowVersionUSA) {
+            romConfiguration.pokemonStatsOffset + (Gen1RomConfiguration.MEW_INDEX - 1) * Gen1RomConfiguration.BASE_STATS_ENTRY_SIZE
+        } else {
+            romConfiguration.mewStatsOffset
+        }
+        saveBasicPokeStats(getPokemon()[Gen1RomConfiguration.MEW_INDEX], mewOffset)
+
+        // Write evolutions
+        writeEvolutionsAndMovesLearnt(true, null)
+    }
+
+    private fun saveBasicPokeStats(pk: Pokemon, offset: Int) {
+        rom.value[offset + Gen1RomConfiguration.BASE_STATS_HP_OFFSET] = pk.hp.toByte()
+        rom.value[offset + Gen1RomConfiguration.BASE_STATS_ATTACK_OFFSET] = pk.attack.toByte()
+        rom.value[offset + Gen1RomConfiguration.BASE_STATS_DEFENSE_OFFSET] = pk.defense.toByte()
+        rom.value[offset + Gen1RomConfiguration.BASE_STATS_SPEED_OFFSET] = pk.speed.toByte()
+        rom.value[offset + Gen1RomConfiguration.BASE_STATS_SPECIAL_OFFSET] = pk.special.toByte()
+        rom.value[offset + Gen1RomConfiguration.BASE_STATS_PRIMARY_TYPE_OFFSET] = typeToByte(pk.primaryType)
+        rom.value[offset + Gen1RomConfiguration.BASE_STATS_SECONDARY_TYPE_OFFSET] = pk.secondaryType?.let { typeToByte(it) } ?: rom.value[offset + Gen1RomConfiguration.BASE_STATS_PRIMARY_TYPE_OFFSET]
+        rom.value[offset + Gen1RomConfiguration.BASE_STATS_CATCH_RATE_OFFSET] = pk.catchRate.toByte()
+        rom.value[offset + Gen1RomConfiguration.BASE_STATS_EXP_YIELD_OFFSET] = pk.expYield.toByte()
+        rom.value[offset + Gen1RomConfiguration.BASE_STATS_GROWTH_CURVE_OFFSET] = pk.growthCurve?.toByte() ?: throw RandomizationException("Growth curve was null and could not be not set for ${pk.name}")
+    }
+    private fun writeEvolutionsAndMovesLearnt(writeEvolutions: Boolean, writeMoves: Boolean?) { }
+
+    private fun typeToByte(type: Type?): Byte {
+        return romConfiguration.typeTable.entries.find { it.value == type }?.key?.toByte() ?: 0x00
     }
 }

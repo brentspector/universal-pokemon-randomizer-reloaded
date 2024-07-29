@@ -37,12 +37,15 @@ open class SilverVersionEnglish : RomConfiguration {
     override val typeTable: MutableMap<Int, Type>
         get() = TODO("Not yet implemented")
 
-
     override fun isLoadable(rom: Rom): Boolean {
         return true
     }
     override fun create(rom: Rom): AbstractRomHandler {
         return Gen2RomHandler(this, rom as GBRom)
+    }
+
+    override fun getLongestTokenLength(): Int {
+        TODO("Not yet implemented")
     }
 }
 

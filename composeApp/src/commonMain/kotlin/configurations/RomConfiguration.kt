@@ -44,6 +44,7 @@ interface RomConfiguration {
 
     fun isLoadable(rom: Rom): Boolean
     fun create(rom: Rom): AbstractRomHandler
+    fun getLongestTokenLength(): Int
 }
 
 val romConfigurations: Map<String, Lazy<RomConfiguration>> = mapOf(

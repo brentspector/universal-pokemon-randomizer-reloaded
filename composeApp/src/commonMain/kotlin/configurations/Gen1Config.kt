@@ -178,6 +178,10 @@ abstract class Gen1RomConfiguration: RomConfiguration {
     override fun create(rom: Rom): AbstractRomHandler {
         return Gen1RomHandler(this, rom as GBRom)
     }
+
+    override fun getLongestTokenLength(): Int {
+        return textLookup.getLongestTokenLength()
+    }
 }
 
 /**

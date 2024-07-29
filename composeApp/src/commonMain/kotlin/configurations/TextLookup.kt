@@ -278,4 +278,12 @@ class TextLookup(private val map: MutableMap<Int, String>) {
     fun lookup(key: UByte): String? {
         return map[key.toInt()]
     }
+
+    fun getLongestTokenLength(): Int {
+        return map.values.maxOf { it.length }
+    }
+
+    fun getByteFromString(lookup: String): Byte? {
+        return map.entries.find { it.value == lookup }?.key?.toByte()
+    }
 }

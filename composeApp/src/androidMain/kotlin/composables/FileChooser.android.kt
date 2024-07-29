@@ -6,12 +6,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts.CreateDocument
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
-import androidx.compose.ui.text.toLowerCase
-import androidx.core.net.toFile
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import viewModels.RandomizerViewModel.loadROM
-import viewModels.RandomizerViewModel.randomizer;
+import viewModels.RandomizerViewModel.randomizer
 import java.io.FileOutputStream
 import models.Rom
 import models.GBRom
@@ -67,13 +65,6 @@ class FileChooserLifecycleObserver(private val registry: ActivityResultRegistry,
 
     private fun saveNDSFile(contentResolver: ContentResolver, uri: Uri?, rom: NDSFile) {
 
-    }
-
-    private fun getExtension(filename: String?): String {
-        if (filename == null)
-            return ""
-
-        return filename.substring(filename.lastIndexOf(".") + 1)
     }
 }
 
